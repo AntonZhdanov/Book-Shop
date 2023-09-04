@@ -1,9 +1,7 @@
 package com.example.bookstore.repository;
 
 import com.example.bookstore.model.Book;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.PersistenceException;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -34,7 +32,7 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new RuntimeException("Can't insert a book into DB: " + book, e);
+            throw new PersistenceException("Can't insert a book into DB: " + book, e);
         } finally {
             if (session != null) {
                 session.close();
@@ -45,13 +43,9 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Book> bookCriteriaQuery = criteriaBuilder.createQuery(Book.class);
-            Root<Book> bookRoot = bookCriteriaQuery.from(Book.class);
-            bookCriteriaQuery.select(bookRoot);
-            return session.createQuery(bookCriteriaQuery).getResultList();
+            return session.createQuery("From Book ", Book.class).getResultList();
         } catch (Exception e) {
-            throw new RuntimeException("Can't find all books", e);
+            throw new PersistenceException("Can't find all books", e);
         }
     }
 }
