@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
 @Repository
-public class BookRepositoryImp implements BookRepository {
+public class BookRepositoryImpl implements BookRepository {
     private final EntityManagerFactory entityManagerFactory;
 
     @Override
@@ -35,12 +35,12 @@ public class BookRepositoryImp implements BookRepository {
     public List<Book> findAll() {
         try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             return entityManager.createQuery(
-                    "SELECT b FROM Book b", Book.class).getResultList();
+                    "FROM Book", Book.class).getResultList();
         }
     }
 
     @Override
-    public Optional<Book> findBookById(Long id) {
+    public Optional<Book> findById(Long id) {
         try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             Book book = entityManager.find(Book.class, id);
             return Optional.ofNullable(book);

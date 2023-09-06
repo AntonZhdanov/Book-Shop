@@ -9,5 +9,5 @@ public interface BookRepository {
 
     List<Book> findAll();
 
-    Optional<Book> findBookById(Long id);
+    Optional<Book> findById(Long id);
 }
