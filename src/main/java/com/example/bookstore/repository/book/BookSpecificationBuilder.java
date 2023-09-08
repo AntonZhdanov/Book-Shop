@@ -16,35 +16,21 @@ public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
     @Override
     public Specification<Book> build(BookSearchParametersDto searchParameters) {
         Specification<Book> spec = Specification.where(null);
-        if (searchParameters.title() != null && searchParameters.title().length > 0) {
+        spec = appendSpec(spec, BookField.TITLE, searchParameters.title());
+        spec = appendSpec(spec, BookField.AUTHOR, searchParameters.author());
+        spec = appendSpec(spec, BookField.ISBN, searchParameters.isbn());
+        spec = appendSpec(spec, BookField.PRICE, searchParameters.price());
+        spec = appendSpec(spec, BookField.DESCRIPTION, searchParameters.description());
+        spec = appendSpec(spec, BookField.COVER_IMAGE, searchParameters.coverImage());
+        return spec;
+    }
+
+    private Specification<Book> appendSpec(Specification<Book> spec,
+                                           BookField field, String[] searchValue) {
+        if (searchValue != null && searchValue.length > 0) {
             spec = spec.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(BookField.TITLE.getKey())
-                    .getSpecification(searchParameters.title()));
-        }
-        if (searchParameters.author() != null && searchParameters.author().length > 0) {
-            spec = spec.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(BookField.AUTHOR.getKey())
-                    .getSpecification(searchParameters.author()));
-        }
-        if (searchParameters.isbn() != null && searchParameters.isbn().length > 0) {
-            spec = spec.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(BookField.ISBN.getKey())
-                    .getSpecification(searchParameters.isbn()));
-        }
-        if (searchParameters.price() != null && searchParameters.price().length > 0) {
-            spec = spec.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(BookField.PRICE.getKey())
-                    .getSpecification(searchParameters.price()));
-        }
-        if (searchParameters.description() != null && searchParameters.description().length > 0) {
-            spec = spec.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(BookField.DESCRIPTION.getKey())
-                    .getSpecification(searchParameters.description()));
-        }
-        if (searchParameters.coverImage() != null && searchParameters.coverImage().length > 0) {
-            spec = spec.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(BookField.COVER_IMAGE.getKey())
-                    .getSpecification(searchParameters.coverImage()));
+                    .getSpecificationProvider(field.getKey())
+                    .getSpecification(searchValue));
         }
         return spec;
     }
