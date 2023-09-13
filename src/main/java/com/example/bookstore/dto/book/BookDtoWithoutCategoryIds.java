@@ -6,11 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
-import java.util.List;
 import lombok.Data;
 
 @Data
-public class CreateBookRequestDto {
+public class BookDtoWithoutCategoryIds {
     private Long id;
     @NotEmpty
     private String title;
@@ -27,5 +26,4 @@ public class CreateBookRequestDto {
     private String description;
     @NotEmpty
     private String coverImage;
-    private List<Long> categoryIds;
 }
