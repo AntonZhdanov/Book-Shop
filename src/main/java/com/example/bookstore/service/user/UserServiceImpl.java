@@ -24,11 +24,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto registrationRequestDto) {
-        if (userRepository.findByEmail(registrationRequestDto.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(registrationRequestDto.email()).isPresent()) {
             throw new RegistrationException("this email is already in use");
         }
         User user = userMapper.toModel(registrationRequestDto);
-        user.setPassword(passwordEncoder.encode(registrationRequestDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(registrationRequestDto.password()));
         Role userRole = roleService.getRoleByRoleName(Role.RoleName.ROLE_USER);
         user.setRoles(new HashSet<>(Set.of(userRole)));
         return userMapper.toDto(userRepository.save(user));

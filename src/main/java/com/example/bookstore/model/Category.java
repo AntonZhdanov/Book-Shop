@@ -31,9 +31,4 @@ public class Category {
     private Set<Book> bookSet = new HashSet<>();
     @Column(nullable = false)
     private boolean isDeleted = false;
-
-    public void addBook(Book book) {
-        bookSet.add(book);
-        book.getCategories().add(this);
-    }
 }

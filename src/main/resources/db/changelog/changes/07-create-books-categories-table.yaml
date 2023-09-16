@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-book-category-table
-      author: root
+      author: anton
       changes:
         - createTable:
             tableName: books_categories

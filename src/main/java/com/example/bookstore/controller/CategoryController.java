@@ -3,7 +3,6 @@ package com.example.bookstore.controller;
 import com.example.bookstore.dto.book.BookDtoWithoutCategoryIds;
 import com.example.bookstore.dto.category.CategoryDto;
 import com.example.bookstore.mapper.CategoryMapper;
-import com.example.bookstore.model.Category;
 import com.example.bookstore.service.category.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +31,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Create a new category")
     @PostMapping
-    public CategoryDto createCategory(CategoryDto categoryDto) {
+    public CategoryDto createCategory(@RequestBody @Valid CategoryDto categoryDto) {
         return categoryService.save(categoryDto);
     }
 
@@ -42,7 +41,7 @@ public class CategoryController {
         return categoryService.findAll(pageable);
     }
 
-    @Operation(summary = "Get a book by ID")
+    @Operation(summary = "Get a category by ID")
     @GetMapping("/{id}")
     public CategoryDto getCategoryById(@PathVariable Long id) {
         return categoryService.getById(id);
@@ -53,10 +52,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     public CategoryDto updateCategory(@PathVariable Long id,
                                       @RequestBody @Valid CategoryDto categoryDto) {
-        Category category = categoryMapper.toModel(categoryDto);
-        category.setId(id);
-        categoryService.update(category);
-        return categoryMapper.toDto(category);
+        return categoryService.update(id, categoryDto);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

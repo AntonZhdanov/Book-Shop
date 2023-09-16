@@ -44,12 +44,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto update(Category category) {
+    public CategoryDto update(Long id, CategoryDto categoryDto) {
+        Category category = categoryMapper.toModel(categoryDto);
+        category.setId(id);
+
         Category categoryFromDb = categoryRepository.findById(category.getId()).orElseThrow(()
                 -> new EntityNotFoundException("Can't find category with id: " + category.getId()));
         categoryFromDb.setName(category.getName());
         categoryFromDb.setDescription(category.getDescription());
-        return categoryMapper.toDto(categoryRepository.save(category));
+        return categoryMapper.toDto(categoryRepository.save(categoryFromDb));
     }
 
     @Override
@@ -59,8 +62,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<BookDtoWithoutCategoryIds> getBooksByCategoriesId(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(()
-                -> new EntityNotFoundException("Can't find category by id: " + id));
+        Category category = categoryRepository.findCategoryWithBooks(id);
+        if (category == null) {
+            throw new EntityNotFoundException("Can't find category by id: " + id);
+        }
 
         Set<Book> books = category.getBookSet();
         List<BookDtoWithoutCategoryIds> bookDtoWithoutCategoryIdsList = books
