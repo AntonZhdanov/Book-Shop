@@ -4,7 +4,7 @@ databaseChangeLog:
       author: anton
       changes:
         - createTable:
-            tableName: roles_users
+            tableName: user_roles
             columns:
               - column:
                   name: user_id
@@ -17,13 +17,13 @@ databaseChangeLog:
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
-            baseTableName: roles_users
+            baseTableName: user_roles
             baseColumnNames: role_id
             referencedTableName: roles
             referencedColumnNames: id
             constraintName: fk_user_roles_role
         - addForeignKeyConstraint:
-            baseTableName: roles_users
+            baseTableName: user_roles
             baseColumnNames: user_id
             referencedTableName: users
             referencedColumnNames: id

@@ -12,5 +12,4 @@ public record UserLoginRequestDto(
         String email,
         @PasswordValidator
         String password
-) {
-}
+) {}
