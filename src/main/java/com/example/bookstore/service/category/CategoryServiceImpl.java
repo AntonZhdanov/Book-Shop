@@ -1,19 +1,16 @@
 package com.example.bookstore.service.category;
 
-import com.example.bookstore.dto.book.BookDtoWithoutCategoryIds;
 import com.example.bookstore.dto.category.CategoryDto;
 import com.example.bookstore.exception.EntityNotFoundException;
 import com.example.bookstore.mapper.BookMapper;
 import com.example.bookstore.mapper.CategoryMapper;
-import com.example.bookstore.model.Book;
 import com.example.bookstore.model.Category;
 import com.example.bookstore.repository.category.CategoryRepository;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,35 +40,18 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 
+    @Transactional
     @Override
     public CategoryDto update(Long id, CategoryDto categoryDto) {
-        Category category = categoryMapper.toModel(categoryDto);
-        category.setId(id);
-
-        Category categoryFromDb = categoryRepository.findById(category.getId()).orElseThrow(()
-                -> new EntityNotFoundException("Can't find category with id: " + category.getId()));
-        categoryFromDb.setName(category.getName());
-        categoryFromDb.setDescription(category.getDescription());
+        Category categoryFromDb = categoryRepository.findById(id).orElseThrow(()
+                -> new EntityNotFoundException("Can't find category with id: " + id));
+        categoryFromDb.setName(categoryDto.getName());
+        categoryFromDb.setDescription(categoryDto.getDescription());
         return categoryMapper.toDto(categoryRepository.save(categoryFromDb));
     }
 
     @Override
     public void deleteById(Long id) {
         categoryRepository.deleteById(id);
-    }
-
-    @Override
-    public List<BookDtoWithoutCategoryIds> getBooksByCategoriesId(Long id) {
-        Category category = categoryRepository.findCategoryWithBooks(id);
-        if (category == null) {
-            throw new EntityNotFoundException("Can't find category by id: " + id);
-        }
-
-        Set<Book> books = category.getBookSet();
-        List<BookDtoWithoutCategoryIds> bookDtoWithoutCategoryIdsList = books
-                .stream()
-                .map(bookMapper::toDtoWithoutCategoryIds)
-                .collect(Collectors.toList());
-        return bookDtoWithoutCategoryIdsList;
     }
 }
