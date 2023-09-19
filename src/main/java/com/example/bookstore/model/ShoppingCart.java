@@ -32,9 +32,9 @@ public class ShoppingCart {
     private User user;
     @OneToMany(mappedBy = "shoppingCart",
             cascade = CascadeType.ALL)
+    @Where(clause = "is_deleted=false")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @Column(nullable = false)
     private Set<CartItem> cartItems = new HashSet<>();
     @Column(nullable = false)
     private boolean isDeleted = false;

@@ -2,7 +2,6 @@ package com.example.bookstore.controller;
 
 import com.example.bookstore.dto.book.BookDtoWithoutCategoryIds;
 import com.example.bookstore.dto.category.CategoryDto;
-import com.example.bookstore.mapper.CategoryMapper;
 import com.example.bookstore.service.category.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/categories")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final CategoryMapper categoryMapper;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Create a new category")

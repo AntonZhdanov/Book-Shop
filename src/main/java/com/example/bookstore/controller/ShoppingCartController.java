@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +32,7 @@ public class ShoppingCartController {
 
     @Operation(summary = "Add book to the shopping cart")
     @PostMapping
-    public ShoppingCartDto addNewBookToShoppingCart(
+    public ShoppingCartDto addNewBookToShoppingCart(@RequestBody
             CreateCartItemRequestDto createCartItemRequestDto) {
         return shoppingCartService.saveNewCartItem(createCartItemRequestDto);
     }
@@ -39,7 +40,7 @@ public class ShoppingCartController {
     @Operation(summary = "Update quantity of a book in the shopping cart")
     @PutMapping("/cart-items/{cartItemId}")
     public ShoppingCartDto updatingQuantityOfBook(@PathVariable Long cartItemId,
-                                                  @Valid UpdateQuantityInCartItemDto
+                                                 @RequestBody @Valid UpdateQuantityInCartItemDto
                                                   updateQuantityInCartItemDto) {
         return shoppingCartService.updateQuantity(cartItemId, updateQuantityInCartItemDto);
     }

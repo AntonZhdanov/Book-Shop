@@ -13,6 +13,7 @@ import com.example.bookstore.service.cartitem.CartItemService;
 import com.example.bookstore.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,30 +23,30 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final CartItemService cartItemService;
     private final UserService userService;
 
+    @Transactional
     @Override
     public ShoppingCartDto getShoppingCart() {
         return shoppingCartMapper.toDto(getUserShoppingCart());
     }
 
+    @Transactional
     @Override
     public ShoppingCartDto saveNewCartItem(CreateCartItemRequestDto createCartItemRequestDto) {
         ShoppingCart shoppingCart = getUserShoppingCart();
-        CartItem cartItem = cartItemService.save(createCartItemRequestDto);
+        CartItem cartItem = cartItemService.save(createCartItemRequestDto, shoppingCart);
         shoppingCart.getCartItems().add(cartItem);
         shoppingCartRepository.save(shoppingCart);
-        //shoppingCart.setCartItems((Set<CartItem>) cartItem);
         return getShoppingCart();
     }
 
+    @Transactional
     @Override
     public ShoppingCartDto deleteCartItem(Long id) {
-        ShoppingCart shoppingCart = getUserShoppingCart();
-        shoppingCart.getCartItems().removeIf(cartItem -> cartItem.getId().equals(id));
-        shoppingCartRepository.save(shoppingCart);
         cartItemService.deleteById(id);
         return getShoppingCart();
     }
 
+    @Transactional
     @Override
     public ShoppingCartDto updateQuantity(Long id,
                                           UpdateQuantityInCartItemDto updateQuantityInCartItemDto) {
@@ -53,9 +54,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return getShoppingCart();
     }
 
-    private ShoppingCart getUserShoppingCart() {
+    @Transactional
+    public ShoppingCart getUserShoppingCart() {
         User user = userService.getUser();
-        return shoppingCartRepository.findById(userService.getUser().getId()).orElseThrow(()
-                -> new EntityNotFoundException("Can't find cart by user id: " + user.getId()));
+        return shoppingCartRepository.findById(userService.getUser().getId()).orElseThrow(() ->
+                new EntityNotFoundException("Can't find cart by user id: " + user.getId()));
     }
 }

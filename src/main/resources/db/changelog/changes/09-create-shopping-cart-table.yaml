@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: 08-create-shopping-cart-table
-      author: anton
+      id: create-shopping-cart-table
+      author: Anton Zhdanov
       changes:
         - createTable:
             tableName: shopping_carts
@@ -9,6 +9,7 @@ databaseChangeLog:
               - column:
                   name: id
                   type: bigint
+                  autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false

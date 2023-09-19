@@ -8,6 +8,7 @@ import com.example.bookstore.mapper.UserMapper;
 import com.example.bookstore.model.Role;
 import com.example.bookstore.model.ShoppingCart;
 import com.example.bookstore.model.User;
+import com.example.bookstore.repository.shoppingcart.ShoppingCartRepository;
 import com.example.bookstore.repository.user.UserRepository;
 import com.example.bookstore.service.role.RoleService;
 import java.util.HashSet;
@@ -25,11 +26,13 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
+    private final ShoppingCartRepository shoppingCartRepository;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto registrationRequestDto) {
         if (userRepository.findByEmail(registrationRequestDto.email()).isPresent()) {
-            throw new RegistrationException("this email is already in use!");
+            throw new RegistrationException("The email: " + registrationRequestDto.email()
+                    + "is already in use. Please choose a different one.");
         }
         User user = userMapper.toModel(registrationRequestDto);
         user.setPassword(passwordEncoder.encode(registrationRequestDto.password()));
@@ -38,6 +41,7 @@ public class UserServiceImpl implements UserService {
         User newUser = userRepository.save(user);
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUser(newUser);
+        shoppingCartRepository.save(shoppingCart);
         return userMapper.toDto(newUser);
     }
 
