@@ -2,6 +2,7 @@ package com.example.bookstore.controller;
 
 import com.example.bookstore.dto.book.BookDtoWithoutCategoryIds;
 import com.example.bookstore.dto.category.CategoryDto;
+import com.example.bookstore.service.book.BookService;
 import com.example.bookstore.service.category.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/categories")
 public class CategoryController {
     private final CategoryService categoryService;
+    private final BookService bookService;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Create a new category")
@@ -63,6 +65,6 @@ public class CategoryController {
     @Operation(summary = "Search books by category id")
     @GetMapping("/{id}/books")
     public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable Long id) {
-        return categoryService.getBooksByCategoriesId(id);
+        return bookService.getBooksByCategoryId(id);
     }
 }

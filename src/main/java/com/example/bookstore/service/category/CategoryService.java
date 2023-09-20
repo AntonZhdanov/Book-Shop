@@ -1,6 +1,5 @@
 package com.example.bookstore.service.category;
 
-import com.example.bookstore.dto.book.BookDtoWithoutCategoryIds;
 import com.example.bookstore.dto.category.CategoryDto;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +14,4 @@ public interface CategoryService {
     CategoryDto update(Long id, CategoryDto categoryDto);
 
     void deleteById(Long id);
-
-    List<BookDtoWithoutCategoryIds> getBooksByCategoriesId(Long id);
 }
