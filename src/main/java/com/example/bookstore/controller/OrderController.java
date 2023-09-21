@@ -27,12 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     private final OrderService orderService;
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get a user's order history")
     @GetMapping
     public List<OrderDto> getOrderHistory(Pageable pageable) {
         return orderService.getOrderHistory(pageable);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Make an order")
     @PostMapping
     public OrderDto makeOrder(@RequestBody @Valid MakeAnOrderDto makeAnOrderDto) {
@@ -47,12 +49,14 @@ public class OrderController {
         orderService.updateOrderStatus(id, updateOrderStatusDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Retrieve all OrderItems for a specific order")
     @GetMapping("/{orderId}/items")
     public List<OrderItemDto> getAllOrderItems(@PathVariable Long orderId) {
         return orderService.getOrderItems(orderId);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Retrieve a specific OrderItem within an order")
     @GetMapping("/{orderId}/items/{itemId}")
     public OrderItemDto getOrderItemById(@PathVariable Long orderId, @PathVariable Long itemId) {
