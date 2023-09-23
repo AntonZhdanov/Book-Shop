@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,20 +25,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Retrieve user's shopping cart")
     @GetMapping
     public ShoppingCartDto getShoppingCart() {
         return shoppingCartService.getShoppingCart();
     }
 
-    @Operation(summary = "Add book to the shopping cart")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(summary = "Add cart item to the shopping cart")
     @PostMapping
     public ShoppingCartDto addNewBookToShoppingCart(@RequestBody
             CreateCartItemRequestDto createCartItemRequestDto) {
         return shoppingCartService.saveNewCartItem(createCartItemRequestDto);
     }
 
-    @Operation(summary = "Update quantity of a book in the shopping cart")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(summary = "Update quantity of a cart item in the shopping cart")
     @PutMapping("/cart-items/{cartItemId}")
     public ShoppingCartDto updatingQuantityOfBook(@PathVariable Long cartItemId,
                                                  @RequestBody @Valid UpdateQuantityInCartItemDto
@@ -45,7 +49,8 @@ public class ShoppingCartController {
         return shoppingCartService.updateQuantity(cartItemId, updateQuantityInCartItemDto);
     }
 
-    @Operation(summary = "Remove a book from the shopping cart")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Operation(summary = "Remove a cart item from the shopping cart")
     @DeleteMapping("/cart-items/{cartItemId}")
     public ShoppingCartDto deleteBookFromShoppingCart(@PathVariable Long cartItemId) {
         return shoppingCartService.deleteCartItem(cartItemId);
