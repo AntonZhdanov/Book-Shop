@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto register(UserRegistrationRequestDto registrationRequestDto) {
         if (userRepository.findByEmail(registrationRequestDto.email()).isPresent()) {
             throw new RegistrationException("The email: " + registrationRequestDto.email()
-                    + "is already in use. Please choose a different one.");
+                    + " is already in use. Please choose a different one.");
         }
         User user = userMapper.toModel(registrationRequestDto);
         user.setPassword(passwordEncoder.encode(registrationRequestDto.password()));
