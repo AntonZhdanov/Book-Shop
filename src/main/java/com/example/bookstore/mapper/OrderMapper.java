@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(config = MapperConfiguration.class)
+@Mapper(config = MapperConfiguration.class, uses = OrderItemMapper.class)
 public interface OrderMapper {
     @Mapping(source = "user.id", target = "userId")
     OrderDto toDto(Order order);

@@ -12,6 +12,7 @@ import com.example.bookstore.repository.shoppingcart.ShoppingCartRepository;
 import com.example.bookstore.service.cartitem.CartItemService;
 import com.example.bookstore.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +43,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     @Override
     public ShoppingCartDto deleteCartItem(Long id) {
+        User user = userService.getUser();
+        CartItem cartItem = cartItemService.findById(id);
+        if (cartItem == null) {
+            throw new EntityNotFoundException("Can't find cart item by id: " + id);
+        }
+        if (!cartItem.getShoppingCart().getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("User does not have permission to "
+                    + "delete this cart item");
+        }
         cartItemService.deleteById(id);
+        ShoppingCart shoppingCart = getUserShoppingCart();
+        shoppingCart.getCartItems().remove(cartItem);
         return getShoppingCart();
     }
 
@@ -58,7 +70,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCart getShoppingCartModel() {
         User user = userService.getUser();
-        return shoppingCartRepository.findById(user.getId()).orElseThrow(()
+        return shoppingCartRepository.findByUserId(user.getId()).orElseThrow(()
                 -> new EntityNotFoundException("Can't find cart by id: " + user.getId()));
     }
 
@@ -74,7 +86,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCart getUserShoppingCart() {
         User user = userService.getUser();
-        return shoppingCartRepository.findById(userService.getUser().getId()).orElseThrow(() ->
+        return shoppingCartRepository.findByUserId(userService.getUser().getId()).orElseThrow(() ->
                 new EntityNotFoundException("Can't find cart by user id: " + user.getId()));
     }
 }
