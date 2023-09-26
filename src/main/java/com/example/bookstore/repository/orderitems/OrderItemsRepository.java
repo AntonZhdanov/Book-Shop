@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderItemsRepository extends JpaRepository<OrderItem, Long> {
-    @Query("SELECT oi FROM OrderItem oi WHERE oi.order.id = :orderId AND oi.book.id = :bookId")
-    Optional<OrderItem> findOrderItem(@Param("orderId") Long orderId, @Param("bookId") Long bookId);
+    @Query("SELECT oi FROM OrderItem oi WHERE oi.order.id = :orderId "
+            + "AND oi.book.id = :bookId AND oi.order.user.id = :userId")
+    Optional<OrderItem> findOrderItem(@Param("orderId") Long orderId,
+                                      @Param("bookId") Long bookId, @Param("userId") Long userId);
 }

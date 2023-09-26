@@ -8,7 +8,6 @@ import com.example.bookstore.model.User;
 import com.example.bookstore.repository.orderitems.OrderItemsRepository;
 import com.example.bookstore.service.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +21,11 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Transactional
     @Override
     public OrderItemDto findOrderItemByOrderIdAndItemId(Long orderId, Long itemId) {
-        OrderItem orderItem = orderItemsRepository.findOrderItem(orderId, itemId)
+        User currentUser = userService.getUser();
+        OrderItem orderItem = orderItemsRepository.findOrderItem(orderId, itemId,
+                        currentUser.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find orderItem "
                         + "with order id: " + orderId + " and item id: " + itemId));
-        User currentUser = userService.getUser();
-        if (!orderItem.getOrder().getUser().equals(currentUser)) {
-            throw new AccessDeniedException("User does not have access to this order item");
-        }
         return orderItemMapper.toDto(orderItem);
     }
 

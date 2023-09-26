@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
         orderItems.forEach(orderItem -> orderItem.setOrder(order));
         order.setOrderItems(orderItems);
         Order savedOrder = orderRepository.save(order);
-        shoppingCartService.confirmPurchase(shoppingCart);
+        shoppingCartService.clearAndCreateNewShoppingCart(shoppingCart);
         return orderMapper.toDto(savedOrder);
     }
 
