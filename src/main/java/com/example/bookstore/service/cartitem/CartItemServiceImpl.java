@@ -21,9 +21,6 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public CartItem save(CreateCartItemRequestDto createCartItemRequestDto,
                          ShoppingCart shoppingCart) {
-        if (createCartItemRequestDto.getBookId() == null) {
-            throw new IllegalArgumentException("Book id cannot be null");
-        }
         Book book = bookRepository.findById(createCartItemRequestDto.getBookId())
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with ID: "
                         + createCartItemRequestDto.getBookId()));
@@ -34,7 +31,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItem findById(Long id) {
+    public CartItem getById(Long id) {
         return cartItemRepository.findById(id).orElseThrow(()
                 -> new EntityNotFoundException("Can't find cartItem by id: " + id));
     }

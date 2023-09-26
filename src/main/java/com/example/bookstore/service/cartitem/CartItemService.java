@@ -8,7 +8,7 @@ public interface CartItemService {
     CartItem save(CreateCartItemRequestDto createCartItemRequestDto,
                   ShoppingCart shoppingCart);
 
-    CartItem findById(Long id);
+    CartItem getById(Long id);
 
     void deleteById(Long id);
 }
