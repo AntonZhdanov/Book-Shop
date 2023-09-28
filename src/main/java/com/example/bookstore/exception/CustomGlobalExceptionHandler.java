@@ -60,4 +60,9 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         body.put("message", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

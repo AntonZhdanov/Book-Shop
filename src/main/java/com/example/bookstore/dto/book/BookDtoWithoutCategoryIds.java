@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.ISBN;
 
+@Accessors(chain = true)
 @Data
 public class BookDtoWithoutCategoryIds {
     private Long id;
