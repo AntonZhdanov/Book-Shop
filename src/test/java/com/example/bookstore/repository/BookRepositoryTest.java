@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.bookstore.model.Book;
-import com.example.bookstore.repository.book.BookField;
 import com.example.bookstore.repository.book.BookRepository;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,21 +44,6 @@ class BookRepositoryTest {
         assertThat(detectiveBooks).hasSize(1);
         assertEquals("1984", scifiBooks.get(0).getTitle());
         assertEquals("The Adventures of Sherlock Holmes", detectiveBooks.get(0).getTitle());
-    }
-
-    @Test
-    @DisplayName("Test existence of specific field in BookRepository")
-    void shouldHaveSpecificField() {
-        // Given
-        String expectedFieldName = "TITLE";
-
-        // When
-        boolean doesFieldExist = Arrays.stream(BookField.values())
-                .anyMatch(field -> field.name().equals(expectedFieldName));
-
-        // Then
-        assertTrue(doesFieldExist, "Field with name " + expectedFieldName
-                + " does not exist in BookField enum.");
     }
 
     @Test

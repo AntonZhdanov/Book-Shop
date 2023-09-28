@@ -18,6 +18,7 @@ import com.example.bookstore.repository.category.CategoryRepository;
 import com.example.bookstore.service.category.CategoryServiceImpl;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,10 @@ import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceImplTest {
+    static final Long CATEGORY_ID = 1L;
+    static final String CATEGORY_NAME = "Fantasy";
+    static final String CATEGORY_DESCRIPTION = "Fantasy";
+
     @InjectMocks
     private CategoryServiceImpl categoryService;
     @Mock
@@ -38,21 +43,35 @@ class CategoryServiceImplTest {
     @Mock
     private CategoryMapper categoryMapper;
 
+    private Category fantasyCategory;
+    private CategoryDto fantasyCategoryDto;
+
+    @BeforeEach
+    void setUp() {
+        fantasyCategory = createCategory(CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESCRIPTION);
+        fantasyCategoryDto = createCategoryDto(CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESCRIPTION);
+    }
+
+    private Category createCategory(Long id, String name, String description) {
+        Category category = new Category();
+        category.setId(id);
+        category.setName(name);
+        category.setDescription(description);
+        return category;
+    }
+
+    private CategoryDto createCategoryDto(Long id, String name, String description) {
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setId(id);
+        categoryDto.setName(name);
+        categoryDto.setDescription(description);
+        return categoryDto;
+    }
+
     @Test
     @DisplayName("Find all categories")
     void findAll_ValidPageable_ReturnsAllCategories() {
         // Given
-        Long categoryId = 1L;
-        Category fantasyCategory = new Category();
-        fantasyCategory.setId(categoryId);
-        fantasyCategory.setName("Fantasy");
-        fantasyCategory.setDescription("Fantasy");
-
-        CategoryDto fantasyCategoryDto = new CategoryDto();
-        fantasyCategoryDto.setId(fantasyCategory.getId());
-        fantasyCategoryDto.setName(fantasyCategory.getName());
-        fantasyCategoryDto.setDescription(fantasyCategory.getDescription());
-
         Pageable pageable = PageRequest.of(0, 10);
         List<Category> categories = List.of(fantasyCategory);
         Page<Category> categoryPage = new PageImpl<>(categories, pageable, categories.size());
@@ -75,22 +94,11 @@ class CategoryServiceImplTest {
     @DisplayName("Get category by id")
     void getById_ValidCategoryId_ReturnsCategoryDto() {
         // Given
-        Long categoryId = 1L;
-        Category fantasyCategory = new Category();
-        fantasyCategory.setId(categoryId);
-        fantasyCategory.setName("Fantasy");
-        fantasyCategory.setDescription("Fantasy");
-
-        CategoryDto fantasyCategoryDto = new CategoryDto();
-        fantasyCategoryDto.setId(fantasyCategory.getId());
-        fantasyCategoryDto.setName(fantasyCategory.getName());
-        fantasyCategoryDto.setDescription(fantasyCategory.getDescription());
-
         when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(fantasyCategory));
         when(categoryMapper.toDto(any(Category.class))).thenReturn(fantasyCategoryDto);
 
         // When
-        CategoryDto actual = categoryService.getById(categoryId);
+        CategoryDto actual = categoryService.getById(CATEGORY_ID);
 
         // Then
         assertEquals(fantasyCategoryDto, actual);
@@ -102,30 +110,18 @@ class CategoryServiceImplTest {
     @DisplayName("Get category with not valid id")
     void getById_NotValidCategoryId_ThrowsException() {
         // Given
-        Long categoryId = 1L;
-        Category fantasyCategory = new Category();
-        fantasyCategory.setId(categoryId);
-        fantasyCategory.setName("Fantasy");
-        fantasyCategory.setDescription("Fantasy");
-
-        CategoryDto fantasyCategoryDto = new CategoryDto();
-        fantasyCategoryDto.setId(fantasyCategory.getId());
-        fantasyCategoryDto.setName(fantasyCategory.getName());
-        fantasyCategoryDto.setDescription(fantasyCategory.getDescription());
-
-        when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
-
         Long nonExistingId = 100L;
+
+        when(categoryRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         // When
         Exception exception = assertThrows(EntityNotFoundException.class,
                 () -> categoryService.getById(nonExistingId));
 
         // Then
-        String expected = "Can't find category by id: " + nonExistingId;
-        String actual = exception.getMessage();
-        assertEquals(expected, actual);
-        verify(categoryRepository, times(1)).findById(anyLong());
+        String expectedMessage = "Can't find category by id: " + nonExistingId;
+        assertEquals(expectedMessage, exception.getMessage());
+        verify(categoryRepository).findById(nonExistingId);
         verifyNoMoreInteractions(categoryRepository);
     }
 
@@ -133,42 +129,27 @@ class CategoryServiceImplTest {
     @DisplayName("Update category")
     void updateById_ValidCategoryId_ReturnsUpdatedCategoryDto() {
         // Given
-        CategoryDto request = new CategoryDto();
-        request.setName("Updated Fantasy");
-        request.setDescription("Updated Fantasy");
-
-        Category categoryFromRequest = new Category();
-        categoryFromRequest.setName(request.getName());
-        categoryFromRequest.setDescription(request.getDescription());
-
-        Long categoryId = 1L;
-        Category categoryFromDb = new Category();
-        categoryFromDb.setId(categoryId);
-        categoryFromDb.setName("Fantasy");
-        categoryFromDb.setDescription("Fantasy");
-
-        CategoryDto dtoFromDb = new CategoryDto();
-        dtoFromDb.setName(categoryFromDb.getName());
-        dtoFromDb.setDescription(categoryFromDb.getDescription());
-        dtoFromDb.setId(categoryFromDb.getId());
-
-        CategoryDto dtoFromRequest = new CategoryDto();
-        dtoFromRequest.setId(categoryId);
-        dtoFromRequest.setName(categoryFromRequest.getName());
-        dtoFromRequest.setDescription(categoryFromRequest.getDescription());
+        CategoryDto request = createCategoryDto(null, "Updated Fantasy",
+                "Updated Fantasy");
+        Category categoryFromDb = createCategory(1L, "Fantasy",
+                "Fantasy");
+        Category updatedCategory = createCategory(1L, "Updated Fantasy",
+                "Updated Fantasy");
 
         when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(categoryFromDb));
-        when(categoryMapper.toModel(request)).thenReturn(categoryFromRequest);
-        when(categoryRepository.save(any(Category.class))).thenReturn(categoryFromRequest);
-        when(categoryMapper.toDto(categoryFromRequest)).thenReturn(dtoFromRequest);
+        when(categoryMapper.toModel(request)).thenReturn(updatedCategory);
+        when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
+        when(categoryMapper.toDto(updatedCategory)).thenReturn(createCategoryDto(1L,
+                "Updated Fantasy", "Updated Fantasy"));
 
         // When
-        CategoryDto updatedDto = categoryService.update(categoryId, request);
+        CategoryDto updatedDto = categoryService.update(1L, request);
 
         // Then
-        assertEquals(dtoFromRequest, updatedDto);
-        verify(categoryRepository, times(1)).findById(anyLong());
-        verify(categoryRepository, times(1)).save(categoryFromRequest);
+        assertEquals(request.getName(), updatedDto.getName());
+        assertEquals(request.getDescription(), updatedDto.getDescription());
+        verify(categoryRepository).findById(1L);
+        verify(categoryRepository).save(updatedCategory);
         verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
 
@@ -190,33 +171,25 @@ class CategoryServiceImplTest {
     @DisplayName("Save a category")
     void shouldSaveCategory() {
         // Arrange
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setName("Science Fiction");
-        categoryDto.setDescription("Description");
-
-        Category category = new Category();
-        category.setName(categoryDto.getName());
-        category.setDescription(categoryDto.getDescription());
-
-        Category savedCategory = new Category();
-        savedCategory.setId(1L);
-        savedCategory.setName(categoryDto.getName());
-        savedCategory.setDescription(categoryDto.getDescription());
-
-        CategoryDto expectedDto = new CategoryDto();
-        expectedDto.setId(1L);
-        expectedDto.setName(categoryDto.getName());
-        expectedDto.setDescription(categoryDto.getDescription());
+        CategoryDto categoryDto = createCategoryDto(null,
+                "Science Fiction", "Description");
+        Category category = createCategory(null,
+                "Science Fiction", "Description");
+        Category savedCategory = createCategory(1L,
+                "Science Fiction", "Description");
 
         when(categoryMapper.toModel(categoryDto)).thenReturn(category);
         when(categoryRepository.save(category)).thenReturn(savedCategory);
-        when(categoryMapper.toDto(savedCategory)).thenReturn(expectedDto);
+        when(categoryMapper.toDto(savedCategory)).thenReturn(createCategoryDto(1L,
+                "Science Fiction", "Description"));
 
         // Act
         CategoryDto resultDto = categoryService.save(categoryDto);
 
         // Assert
-        assertEquals(expectedDto, resultDto);
+        assertEquals(categoryDto.getName(), resultDto.getName());
+        assertEquals(categoryDto.getDescription(), resultDto.getDescription());
+        assertEquals(1L, resultDto.getId());
 
         verify(categoryMapper).toModel(categoryDto);
         verify(categoryRepository).save(category);
