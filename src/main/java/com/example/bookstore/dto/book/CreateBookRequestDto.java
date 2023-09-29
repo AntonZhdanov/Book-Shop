@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.util.List;
 import org.hibernate.validator.constraints.ISBN;
 
 public record CreateBookRequestDto(
@@ -13,5 +14,6 @@ public record CreateBookRequestDto(
         @NotNull @ISBN String isbn,
         @NotNull @Positive BigDecimal price,
         @NotEmpty String description,
-        @NotEmpty String coverImage
+        @NotEmpty String coverImage,
+        List<Long> categoryIds
 ) {}
