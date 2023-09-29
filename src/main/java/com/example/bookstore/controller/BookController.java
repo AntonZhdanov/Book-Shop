@@ -1,17 +1,18 @@
 package com.example.bookstore.controller;
 
-import com.example.bookstore.dto.BookDto;
-import com.example.bookstore.dto.BookSearchParametersDto;
-import com.example.bookstore.dto.CreateBookRequestDto;
+import com.example.bookstore.dto.book.BookDto;
+import com.example.bookstore.dto.book.BookSearchParametersDto;
+import com.example.bookstore.dto.book.CreateBookRequestDto;
 import com.example.bookstore.mapper.BookMapper;
 import com.example.bookstore.model.Book;
-import com.example.bookstore.service.BookService;
+import com.example.bookstore.service.book.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ public class BookController {
         return bookService.findAll(pageable);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Create a new book")
     @PostMapping
     public BookDto save(@RequestBody @Valid CreateBookRequestDto createBookRequestDto) {
@@ -47,12 +49,14 @@ public class BookController {
         return bookService.findById(id);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Delete the book by ID")
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
         bookService.deleteById(id);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Update the book by ID")
     @PutMapping("/{id}")
     public BookDto update(@PathVariable Long id,
