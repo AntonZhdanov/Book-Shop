@@ -10,5 +10,5 @@ public interface CartItemService {
 
     CartItem getById(Long id);
 
-    void deleteById(Long id);
+    void deleteById(Long id, Long userId);
 }

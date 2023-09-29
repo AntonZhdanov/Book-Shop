@@ -13,7 +13,6 @@ import com.example.bookstore.repository.shoppingcart.ShoppingCartRepository;
 import com.example.bookstore.service.cartitem.CartItemService;
 import com.example.bookstore.service.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,17 +45,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartDto deleteCartItem(Long id) {
         User user = userService.getUser();
-        CartItem cartItem = cartItemService.getById(id);
-        if (cartItem == null) {
-            throw new EntityNotFoundException("Can't find cart item by id: " + id);
-        }
-        if (!cartItem.getShoppingCart().getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("User does not have permission to "
-                    + "delete this cart item");
-        }
-        cartItemService.deleteById(id);
+        cartItemService.deleteById(id, user.getId());
         ShoppingCart shoppingCart = getUserShoppingCart();
-        shoppingCart.getCartItems().remove(cartItem);
+        shoppingCart.getCartItems().removeIf(cartItem -> cartItem.getId().equals(id));
         return getShoppingCart();
     }
 
