@@ -8,6 +8,7 @@ import com.example.bookstore.mapper.ShoppingCartMapper;
 import com.example.bookstore.model.CartItem;
 import com.example.bookstore.model.ShoppingCart;
 import com.example.bookstore.model.User;
+import com.example.bookstore.repository.cartitem.CartItemRepository;
 import com.example.bookstore.repository.shoppingcart.ShoppingCartRepository;
 import com.example.bookstore.service.cartitem.CartItemService;
 import com.example.bookstore.service.user.UserService;
@@ -22,6 +23,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final CartItemService cartItemService;
     private final UserService userService;
+    private final CartItemRepository cartItemRepository;
 
     @Transactional
     @Override
@@ -53,7 +55,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartDto updateQuantity(Long id,
                                           UpdateQuantityInCartItemDto updateQuantityInCartItemDto) {
-        cartItemService.findById(id).setQuantity(updateQuantityInCartItemDto.quantity());
+        CartItem cartItem = cartItemService.getById(id);
+        cartItem.setQuantity(updateQuantityInCartItemDto.quantity());
+        cartItemRepository.save(cartItem);
         return getShoppingCart();
     }
 
@@ -74,8 +78,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCartRepository.save(shoppingCartNew);
     }
 
-    @Transactional
-    public ShoppingCart getUserShoppingCart() {
+
+    private ShoppingCart getUserShoppingCart() {
         User user = userService.getUser();
         return shoppingCartRepository.findByUserId(userService.getUser().getId()).orElseThrow(() ->
                 new EntityNotFoundException("Can't find cart by user id: " + user.getId()));

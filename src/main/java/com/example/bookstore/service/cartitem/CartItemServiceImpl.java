@@ -35,7 +35,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItem findById(Long id) {
+    public CartItem getById(Long id) {
         return cartItemRepository.findById(id).orElseThrow(()
                 -> new EntityNotFoundException("Can't find cartItem by id: " + id));
     }
@@ -45,7 +45,7 @@ public class CartItemServiceImpl implements CartItemService {
         if (!cartItemRepository.existsById(id)) {
             throw new EntityNotFoundException("Can't delete cartItem by id: " + id);
         }
-        CartItem cartItem = findById(id);
+        CartItem cartItem = getById(id);
         if (!cartItem.getShoppingCart().getUser().getId().equals(userId)) {
             throw new AccessDeniedException("User does not have permission to "
                     + "delete this cart item");
