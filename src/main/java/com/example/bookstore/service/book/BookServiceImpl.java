@@ -10,7 +10,6 @@ import com.example.bookstore.model.Book;
 import com.example.bookstore.repository.SpecificationBuilder;
 import com.example.bookstore.repository.book.BookRepository;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -74,6 +73,6 @@ public class BookServiceImpl implements BookService {
         List<Book> books = bookRepository.findAllByCategoryId(categoryId);
         return books.stream()
                 .map(bookMapper::toDtoWithoutCategoryIds)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

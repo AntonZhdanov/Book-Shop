@@ -21,3 +21,4 @@ public interface CartItemMapper {
     @Mapping(target = "deleted", ignore = true)
     CartItem toModel(CreateCartItemRequestDto requestDto);
 }
+

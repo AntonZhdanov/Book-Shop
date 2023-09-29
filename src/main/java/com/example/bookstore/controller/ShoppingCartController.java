@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "ShoppingCart management", description = "Endpoints for managing shoppingCarts")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/api/cart")
+@RequestMapping(value = "/cart")
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
 
@@ -33,15 +33,15 @@ public class ShoppingCartController {
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @Operation(summary = "Add book to the shopping cart")
+    @Operation(summary = "Add cart item to the shopping cart")
     @PostMapping
-    public ShoppingCartDto addNewBookToShoppingCart(@RequestBody
+    public ShoppingCartDto addNewBookToShoppingCart(@RequestBody @Valid
             CreateCartItemRequestDto createCartItemRequestDto) {
         return shoppingCartService.saveNewCartItem(createCartItemRequestDto);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @Operation(summary = "Update quantity of a book in the shopping cart")
+    @Operation(summary = "Update quantity of a cart item in the shopping cart")
     @PutMapping("/cart-items/{cartItemId}")
     public ShoppingCartDto updatingQuantityOfBook(@PathVariable Long cartItemId,
                                                  @RequestBody @Valid UpdateQuantityInCartItemDto
@@ -50,7 +50,7 @@ public class ShoppingCartController {
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @Operation(summary = "Remove a book from the shopping cart")
+    @Operation(summary = "Remove a cart item from the shopping cart")
     @DeleteMapping("/cart-items/{cartItemId}")
     public ShoppingCartDto deleteBookFromShoppingCart(@PathVariable Long cartItemId) {
         return shoppingCartService.deleteCartItem(cartItemId);
