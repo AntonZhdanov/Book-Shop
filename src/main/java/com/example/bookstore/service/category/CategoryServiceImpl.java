@@ -2,7 +2,6 @@ package com.example.bookstore.service.category;
 
 import com.example.bookstore.dto.category.CategoryDto;
 import com.example.bookstore.exception.EntityNotFoundException;
-import com.example.bookstore.mapper.BookMapper;
 import com.example.bookstore.mapper.CategoryMapper;
 import com.example.bookstore.model.Category;
 import com.example.bookstore.repository.category.CategoryRepository;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
-    private final BookMapper bookMapper;
 
     @Override
     public List<CategoryDto> findAll(Pageable pageable) {

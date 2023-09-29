@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Category management", description = "Endpoints for managing categories")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/api/categories")
+@RequestMapping(value = "/categories")
 public class CategoryController {
     private final CategoryService categoryService;
     private final BookService bookService;
@@ -35,12 +35,14 @@ public class CategoryController {
         return categoryService.save(categoryDto);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER, ROLE_ADMIN')")
     @Operation(summary = "Get all categories with pagination")
     @GetMapping
     public List<CategoryDto> getAll(Pageable pageable) {
         return categoryService.findAll(pageable);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER, ROLE_ADMIN')")
     @Operation(summary = "Get a category by ID")
     @GetMapping("/{id}")
     public CategoryDto getCategoryById(@PathVariable Long id) {
@@ -62,6 +64,7 @@ public class CategoryController {
         categoryService.deleteById(id);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER, ROLE_ADMIN')")
     @Operation(summary = "Search books by category id")
     @GetMapping("/{id}/books")
     public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable Long id) {
