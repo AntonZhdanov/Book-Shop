@@ -100,7 +100,7 @@ This README file will describe how to work with the application and the steps to
     <h3> Short Video Instruction </h3>
     <p>
         Additionally, you can view a brief video to familiarize yourself with the workflow:
-        <br> - Here is the link: 
+        <br> - Here is the link: `https://www.loom.com/share/51f94f2fdfeb4187b9365b231f9de875.`
     </p>
 </div>
 <hr>
