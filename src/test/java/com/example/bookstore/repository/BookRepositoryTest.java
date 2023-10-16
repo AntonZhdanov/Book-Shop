@@ -33,12 +33,10 @@ class BookRepositoryTest {
     @Test
     @DisplayName("Find all books by category id")
     void findAllByCategoryId_ValidCategoryIds_ReturnListOfBooks() {
-        // When
         List<Book> fantasyBooks = bookRepository.findAllByCategoryId(1L);
         List<Book> scifiBooks = bookRepository.findAllByCategoryId(2L);
         List<Book> detectiveBooks = bookRepository.findAllByCategoryId(3L);
 
-        // Then
         assertThat(fantasyBooks).hasSize(2);
         assertThat(scifiBooks).hasSize(1);
         assertThat(detectiveBooks).hasSize(1);
@@ -49,10 +47,8 @@ class BookRepositoryTest {
     @Test
     @DisplayName("Find all books by non-existent category id")
     void findAllByCategoryId_NonExistentId_EmptyList() {
-        // When
         List<Book> books = bookRepository.findAllByCategoryId(999L);
 
-        // Then
         assertTrue(books.isEmpty());
     }
 }

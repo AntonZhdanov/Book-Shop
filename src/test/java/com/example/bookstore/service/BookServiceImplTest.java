@@ -52,7 +52,6 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Save a book")
     public void save_ValidCreateBookRequestDto_ReturnsValidBookDto() {
-        // Given
         Book book = new Book();
         book.setTitle("The Lord of the Rings");
         book.setAuthor("J. R. R. Tolkien");
@@ -87,10 +86,8 @@ class BookServiceImplTest {
         when(bookRepository.save(book)).thenReturn(book);
         when(bookMapper.toDto(book)).thenReturn(bookDto);
 
-        // When
         BookDto actual = bookService.save(requestDto);
 
-        // Then
         assertEquals(bookDto, actual);
         verify(bookRepository, times(1)).save(book);
         verifyNoMoreInteractions(bookRepository, bookMapper);
@@ -99,7 +96,6 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Find all books")
     public void findAll_ValidPageable_ReturnsAllBooks() {
-        // Given
         Long bookId = 1L;
         Book book = new Book();
         book.setId(bookId);
@@ -140,10 +136,8 @@ class BookServiceImplTest {
         when(bookRepository.findAll(pageable)).thenReturn(bookPage);
         when(bookMapper.toDto(book)).thenReturn(bookDto);
 
-        // When
         List<BookDto> bookDtos = bookService.findAll(pageable);
 
-        // Then
         assertThat(bookDtos).hasSize(1);
         assertEquals(bookDtos.get(0), bookDto);
         verify(bookRepository, times(1)).findAll(pageable);
@@ -153,7 +147,6 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Get a book by id")
     public void getBookById_ValidBookId_ReturnsValidBookDto() {
-        // Given
         Long bookId = 1L;
         Book book = new Book();
         book.setId(bookId);
@@ -188,10 +181,8 @@ class BookServiceImplTest {
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
         when(bookMapper.toDto(book)).thenReturn(bookDto);
 
-        // When
         BookDto actual = bookService.findById(bookId);
 
-        // Then
         assertEquals(bookDto, actual);
         verify(bookRepository, times(1)).findById(bookId);
         verifyNoMoreInteractions(bookRepository, bookMapper);
@@ -200,15 +191,12 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Get a book with not valid id")
     public void getBookById_NotValidBookId_ThrowsException() {
-        // Given
         Long bookId = 100L;
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        // When
         Exception exception = assertThrows(EntityNotFoundException.class, () ->
                 bookService.findById(bookId));
 
-        // Then
         String expected = "Can't find book by id: " + bookId;
         String actual = exception.getMessage();
         assertEquals(expected, actual);
@@ -219,7 +207,6 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Update a book")
     public void update_ValidBook_ReturnsUpdatedBookDto() {
-        // Given
         Long bookId = 1L;
         Book existingBook = new Book();
         existingBook.setId(bookId);
@@ -262,10 +249,8 @@ class BookServiceImplTest {
         when(bookRepository.save(updatedBook)).thenReturn(updatedBook);
         when(bookMapper.toDto(updatedBook)).thenReturn(expectedDto);
 
-        // When
         BookDto resultDto = bookService.update(updatedBook);
 
-        // Then
         assertEquals(expectedDto, resultDto);
         verify(bookRepository, times(1)).findById(bookId);
         verify(bookRepository, times(1)).save(updatedBook);
@@ -277,13 +262,10 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Delete book by id")
     public void deleteById_ValidId_CallsRepositoryDelete() {
-        // Given
         Long bookId = 1L;
 
-        // When
         bookService.deleteById(bookId);
 
-        // Then
         verify(bookRepository, times(1)).deleteById(bookId);
         verifyNoMoreInteractions(bookRepository);
     }
@@ -291,7 +273,6 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Search books")
     public void search_ValidParameters_ReturnsListOfBooks() {
-        // Given
         Long bookId = 1L;
         Book book = new Book();
         book.setId(bookId);
@@ -336,10 +317,8 @@ class BookServiceImplTest {
         when(bookRepository.findAll(spec)).thenReturn(List.of(book));
         when(bookMapper.toDto(any(Book.class))).thenReturn(bookDto);
 
-        // When
         List<BookDto> searchedBooks = bookService.search(parameters);
 
-        // Then
         assertThat(searchedBooks).hasSize(1);
         assertEquals(bookDto, searchedBooks.get(0));
         verify(bookRepository, times(1)).findAll(spec);
@@ -349,8 +328,6 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Search books with not valid parameters")
     public void search_NotValidParameters_ReturnsEmptyList() {
-        // Given
-
         Long bookId = 1L;
         Book book = new Book();
         book.setId(bookId);
@@ -394,10 +371,8 @@ class BookServiceImplTest {
         when(specificationBuilder.build(parameters)).thenReturn(spec);
         when(bookRepository.findAll(spec)).thenReturn(List.of());
 
-        // When
         List<BookDto> searchedBooks = bookService.search(parameters);
 
-        // Then
         assertThat(searchedBooks).hasSize(0);
         verify(bookRepository, times(1)).findAll(spec);
         verifyNoMoreInteractions(bookRepository, specificationBuilder, bookMapper);
@@ -406,7 +381,6 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Get books by category id")
     public void getBookByCategoryId_ValidCategoryId_ReturnsListOfBooks() {
-        // Given
         Long bookId = 1L;
         Book book = new Book();
         book.setId(bookId);
@@ -441,10 +415,8 @@ class BookServiceImplTest {
         when(bookRepository.findAllByCategoryId(anyLong())).thenReturn(List.of(book));
         when(bookMapper.toDtoWithoutCategoryIds(book)).thenReturn(bookDto);
 
-        // When
         List<BookDtoWithoutCategoryIds> booksByCategoryId = bookService.getBooksByCategoryId(1L);
 
-        // Then
         assertThat(booksByCategoryId).hasSize(1);
         assertEquals(bookDto, booksByCategoryId.get(0));
 
@@ -455,13 +427,10 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Get books by not valid category id")
     public void getBookByCategoryId_NotValidCategoryId_ReturnsEmptyList() {
-        // Given
         when(bookRepository.findAllByCategoryId(anyLong())).thenReturn(List.of());
 
-        // When
         List<BookDtoWithoutCategoryIds> booksByCategoryId = bookService.getBooksByCategoryId(1L);
 
-        // Then
         assertThat(booksByCategoryId).hasSize(0);
         verify(bookRepository, times(1)).findAllByCategoryId(anyLong());
         verifyNoMoreInteractions(bookRepository, bookMapper);

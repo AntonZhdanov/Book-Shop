@@ -43,6 +43,9 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BookControllerTest {
     protected static MockMvc mockMvc;
+    private static BookDto expectedBookDto;
+    private static CategoryDto sciFiDto;
+    private static CreateBookRequestDto createBookRequestDto;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -55,7 +58,13 @@ class BookControllerTest {
                 .webAppContextSetup(applicationContext)
                 .apply(springSecurity())
                 .build();
+
         teardown(dataSource);
+        setupDatabase(dataSource);
+        setupTestData();
+    }
+
+    private static void setupDatabase(DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(true);
             ScriptUtils.executeSqlScript(connection,
@@ -65,6 +74,32 @@ class BookControllerTest {
             ScriptUtils.executeSqlScript(connection,
                     new ClassPathResource("database/categories/associate-categories-to-books.sql"));
         }
+    }
+
+    private static void setupTestData() {
+        sciFiDto = new CategoryDto()
+                .setId(2L)
+                .setName("Science Fiction")
+                .setDescription("Science Fiction");
+
+        expectedBookDto = new BookDto()
+                .setId(1L)
+                .setTitle("1984")
+                .setAuthor("George Orwell")
+                .setIsbn("978-5-699-12014-7")
+                .setPrice(BigDecimal.valueOf(19))
+                .setDescription("Description")
+                .setCoverImage("Cover image")
+                .setCategoryIds(List.of(sciFiDto.getId()));
+
+        createBookRequestDto = new CreateBookRequestDto(
+                "The Hound of the Baskervilles",
+                "Sir Arthur Conan Doyle",
+                "9780544003415",
+                BigDecimal.valueOf(15),
+                "Description",
+                "Cover image",
+                List.of(3L));
     }
 
     @AfterAll
@@ -91,12 +126,10 @@ class BookControllerTest {
     @Test
     @DisplayName("Get all books")
     void getAll_ValidPageable_Success() throws Exception {
-        // When
         MvcResult result = mockMvc.perform(get("/api/books"))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Then
         List<BookDto> response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 new TypeReference<>() {
@@ -109,30 +142,14 @@ class BookControllerTest {
     @Test
     @DisplayName("Get book by id")
     void getBookById_ValidId_Success() throws Exception {
-        // Given
-        Long id = 1L;
+        long id = 1L;
 
-        CategoryDto sciFiDto = new CategoryDto()
-                .setId(2L)
-                .setName("Science Fiction")
-                .setDescription("Science Fiction");
+        BookDto expected = BookControllerTest.expectedBookDto;
 
-        BookDto expected = new BookDto()
-                .setId(id)
-                .setTitle("1984")
-                .setAuthor("George Orwell")
-                .setIsbn("978-5-699-12014-7")
-                .setPrice(BigDecimal.valueOf(19))
-                .setDescription("Description")
-                .setCoverImage("Cover image")
-                .setCategoryIds(List.of(sciFiDto.getId()));
-
-        // When
         MvcResult result = mockMvc.perform(get("/api/books/" + id))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Then
         BookDto actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 BookDto.class);
@@ -145,10 +162,8 @@ class BookControllerTest {
     @Test
     @DisplayName("Get book by non existing id")
     void getBookById_NotValidId_NotFound() throws Exception {
-        // Given
         long nonExistingId = 100L;
 
-        // When
         mockMvc.perform(get("/api/books/" + nonExistingId))
                 .andExpect(status().isNotFound());
     }
@@ -159,15 +174,7 @@ class BookControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("Create a book")
     void createBook_ValidRequestDto_Success() throws Exception {
-        // Given
-        CreateBookRequestDto requestDto = new CreateBookRequestDto(
-                "The Hound of the Baskervilles",
-                "Sir Arthur Conan Doyle",
-                "9780544003415",
-                BigDecimal.valueOf(15),
-                "Description",
-                "Cover image",
-                List.of(3L));
+        CreateBookRequestDto requestDto = createBookRequestDto;
 
         CategoryDto detectiveDto = new CategoryDto()
                 .setId(3L)
@@ -185,7 +192,6 @@ class BookControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
-        // When
         MvcResult result = mockMvc.perform(
                         post("/api/books")
                                 .content(jsonRequest)
@@ -193,7 +199,6 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Then
         BookDto actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 BookDto.class);
@@ -207,7 +212,6 @@ class BookControllerTest {
     @Test
     @DisplayName("Create a book with not valid request")
     void createBook_NotValidRequestDto_BadRequest() throws Exception {
-        // Given
         CreateBookRequestDto requestDto = new CreateBookRequestDto(
 
                 "The Hound of the Baskervilles",
@@ -220,7 +224,6 @@ class BookControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
-        // When
         mockMvc.perform(
                         post("/api/books")
                                 .content(jsonRequest)
@@ -233,7 +236,6 @@ class BookControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Delete a book ")
     void delete_ValidId_Success() throws Exception {
-        // Given
         long id = 11L;
 
         MvcResult resultBeforeDelete = mockMvc.perform(get("/api/books")
@@ -246,12 +248,10 @@ class BookControllerTest {
                 new TypeReference<>() {
                 });
 
-        // When
         mockMvc.perform(delete("/api/books/" + id)
                         .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
 
-        // Then
         MvcResult resultAfterDelete = mockMvc.perform(get("/api/books")
                         .with(user("user")))
                 .andExpect(status().isOk())
@@ -269,10 +269,8 @@ class BookControllerTest {
     @Test
     @DisplayName("Delete a book with not valid id")
     void delete_NotValidId() throws Exception {
-        // Given
         long nonExistingId = 100L;
 
-        // When
         MvcResult resultBeforeDelete = mockMvc.perform(get("/api/books")
                         .with(user("user")))
                 .andExpect(status().isOk())
@@ -297,7 +295,6 @@ class BookControllerTest {
                 new TypeReference<>() {
                 });
 
-        // Then
         assertThat(booksBeforeDelete).hasSize(4);
         assertThat(booksAfterDelete).hasSize(4);
     }
@@ -310,7 +307,6 @@ class BookControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("Update a book")
     void updateBookById_ValidIdValidRequestDto_Success() throws Exception {
-        // Given
         long id = 12L;
 
         CreateBookRequestDto requestDto = new CreateBookRequestDto(
@@ -322,10 +318,7 @@ class BookControllerTest {
                 "Updated cover image",
                 List.of(2L));
 
-        CategoryDto sciFiDto = new CategoryDto()
-                .setId(1L)
-                .setName("Science Fiction")
-                .setDescription("Science Fiction");
+        CategoryDto sciFiDto = BookControllerTest.sciFiDto;
 
         BookDto expected = new BookDto()
                 .setTitle(requestDto.title())
@@ -338,14 +331,12 @@ class BookControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
-        // When
         MvcResult result = mockMvc.perform(put("/api/books/" + id)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Then
         BookDto actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 BookDto.class);
@@ -359,7 +350,6 @@ class BookControllerTest {
     @Test
     @DisplayName("Update a book with not valid id")
     void updateBookById_NotValidId_BadRequest() throws Exception {
-        // Given
         long nonExistingId = 100L;
 
         CreateBookRequestDto requestDto = new CreateBookRequestDto(
@@ -373,7 +363,6 @@ class BookControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
-        // When
         MvcResult result = mockMvc.perform(put("/api/books/" + nonExistingId)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -385,7 +374,6 @@ class BookControllerTest {
     @Test
     @DisplayName("Update a book with not valid request")
     void updateBookById_NotValidRequestDto_BadRequest() throws Exception {
-        // Given
         long id = 1L;
 
         CreateBookRequestDto requestDto = new CreateBookRequestDto(
@@ -399,7 +387,6 @@ class BookControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
-        // When
         mockMvc.perform(put("/api/books/" + id)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -409,7 +396,6 @@ class BookControllerTest {
     @Test
     @DisplayName("Search books based on put criteria")
     void searchBooks_ValidParameters_ReturnsListOfBooks() throws Exception {
-        // When
         MvcResult resultTitleQuery = mockMvc.perform(get("/api/books/search")
                         .param("title", "The Lord of The Rings")
                         .with(user("user")))
@@ -428,7 +414,6 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Then
         List<BookDto> responseTitleQuery = objectMapper.readValue(
                 resultTitleQuery.getResponse().getContentAsString(),
                 new TypeReference<>() {
@@ -457,12 +442,10 @@ class BookControllerTest {
     @Test
     @DisplayName("Search books with no parameters")
     void searchBooks_NoParameters_ReturnsListOfAllBooks() throws Exception {
-        // When
         MvcResult result = mockMvc.perform(get("/api/books/search"))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Then
         List<BookDto> response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 new TypeReference<>() {
