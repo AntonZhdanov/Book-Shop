@@ -17,9 +17,6 @@ class BookSpecificationBuilderTest {
     @Autowired
     private BookSpecificationBuilder builder;
 
-    @Autowired
-    private SpecificationProviderManager<Book> bookSpecificationProviderManager;
-
     @Test
     @DisplayName("Build Specifications with valid parameters")
     void build_ValidParameters_SpecificationIsBuilt() {

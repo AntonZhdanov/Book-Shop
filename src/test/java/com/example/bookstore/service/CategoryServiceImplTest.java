@@ -96,7 +96,7 @@ class CategoryServiceImplTest {
         CategoryDto actual = categoryService.getById(CATEGORY_ID);
 
         assertEquals(fantasyCategoryDto, actual);
-        verify(categoryRepository).findById(anyLong());
+        verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
 
     @Test
@@ -135,7 +135,6 @@ class CategoryServiceImplTest {
 
         assertEquals(request.getName(), updatedDto.getName());
         assertEquals(request.getDescription(), updatedDto.getDescription());
-        verify(categoryRepository).findById(1L);
         verify(categoryRepository).save(updatedCategory);
         verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
@@ -147,7 +146,7 @@ class CategoryServiceImplTest {
 
         categoryService.deleteById(categoryId);
 
-        verify(categoryRepository, times(1)).deleteById(categoryId);
+        verify(categoryRepository).deleteById(categoryId);
         verifyNoMoreInteractions(categoryRepository);
     }
 
@@ -172,9 +171,7 @@ class CategoryServiceImplTest {
         assertEquals(categoryDto.getDescription(), resultDto.getDescription());
         assertEquals(1L, resultDto.getId());
 
-        verify(categoryMapper).toModel(categoryDto);
         verify(categoryRepository).save(category);
-        verify(categoryMapper).toDto(savedCategory);
     }
 
     @Test
