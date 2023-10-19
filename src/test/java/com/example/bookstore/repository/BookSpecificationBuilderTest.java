@@ -23,7 +23,6 @@ class BookSpecificationBuilderTest {
     @Test
     @DisplayName("Build Specifications with valid parameters")
     void build_ValidParameters_SpecificationIsBuilt() {
-        // Given
         BookSearchParametersDto dto = new BookSearchParametersDto(
                 new String[]{"The Great Gatsby"},
                 new String[]{"F. Scott Fitzgerald"},
@@ -33,10 +32,8 @@ class BookSpecificationBuilderTest {
                 new String[]{"URL_TO_COVER_IMAGE"}
         );
 
-        // When
         Specification<Book> spec = builder.build(dto);
 
-        // Then
         assertNotNull(spec);
     }
 }
