@@ -61,6 +61,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return getShoppingCart();
     }
 
+    @Transactional
+    @Override
+    public ShoppingCart getShoppingCartModel() {
+        User user = userService.getUser();
+        return shoppingCartRepository.findByUserId(user.getId()).orElseThrow(()
+                -> new EntityNotFoundException("Can't find cart by id: " + user.getId()));
+    }
+
+    @Transactional
+    @Override
+    public void clearAndCreateNewShoppingCart(ShoppingCart shoppingCart) {
+        shoppingCartRepository.delete(shoppingCart);
+        ShoppingCart shoppingCartNew = new ShoppingCart();
+        shoppingCartNew.setUser(shoppingCart.getUser());
+        shoppingCartRepository.save(shoppingCartNew);
+    }
+
     private ShoppingCart getUserShoppingCart() {
         User user = userService.getUser();
         return shoppingCartRepository.findByUserId(userService.getUser().getId()).orElseThrow(() ->
