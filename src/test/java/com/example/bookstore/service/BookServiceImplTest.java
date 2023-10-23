@@ -21,6 +21,7 @@ import com.example.bookstore.model.Book;
 import com.example.bookstore.model.Category;
 import com.example.bookstore.repository.book.BookRepository;
 import com.example.bookstore.repository.book.BookSpecificationBuilder;
+import com.example.bookstore.repository.category.CategoryRepository;
 import com.example.bookstore.service.book.BookServiceImpl;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -48,6 +49,8 @@ class BookServiceImplTest {
     private BookMapper bookMapper;
     @Mock
     private BookSpecificationBuilder specificationBuilder;
+    @Mock
+    private CategoryRepository categoryRepository;
 
     @Test
     @DisplayName("Save a book")
@@ -81,8 +84,13 @@ class BookServiceImplTest {
                 "The Lord of the Rings image",
                  categoryIds
         );
+        Category category = new Category();
+        category.setId(1L);
+        category.setName("Fantasy");
+        List<Category> categories = List.of(category);
 
         when(bookMapper.toModel(requestDto)).thenReturn(book);
+        when(categoryRepository.findAllById(categoryIds)).thenReturn(categories);
         when(bookRepository.save(book)).thenReturn(book);
         when(bookMapper.toDto(book)).thenReturn(bookDto);
 
@@ -90,7 +98,8 @@ class BookServiceImplTest {
 
         assertEquals(bookDto, actual);
         verify(bookRepository, times(1)).save(book);
-        verifyNoMoreInteractions(bookRepository, bookMapper);
+        verify(categoryRepository, times(1)).findAllById(categoryIds);
+        verifyNoMoreInteractions(bookRepository, bookMapper, categoryRepository);
     }
 
     @Test

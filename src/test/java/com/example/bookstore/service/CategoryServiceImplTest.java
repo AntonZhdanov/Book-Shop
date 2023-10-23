@@ -122,20 +122,18 @@ class CategoryServiceImplTest {
                 "Updated Fantasy");
         Category categoryFromDb = createCategory(1L, "Fantasy",
                 "Fantasy");
-        Category updatedCategory = createCategory(1L, "Updated Fantasy",
+        CategoryDto expectedDto = createCategoryDto(1L, "Updated Fantasy",
                 "Updated Fantasy");
 
         when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(categoryFromDb));
-        when(categoryMapper.toModel(request)).thenReturn(updatedCategory);
-        when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
-        when(categoryMapper.toDto(updatedCategory)).thenReturn(createCategoryDto(1L,
-                "Updated Fantasy", "Updated Fantasy"));
+        when(categoryRepository.save(categoryFromDb)).thenReturn(categoryFromDb);
+        when(categoryMapper.toDto(categoryFromDb)).thenReturn(expectedDto);
 
         CategoryDto updatedDto = categoryService.update(1L, request);
 
         assertEquals(request.getName(), updatedDto.getName());
         assertEquals(request.getDescription(), updatedDto.getDescription());
-        verify(categoryRepository).save(updatedCategory);
+        verify(categoryRepository).save(categoryFromDb);
         verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
 
@@ -182,8 +180,6 @@ class CategoryServiceImplTest {
         categoryDto.setName("SomeName");
         categoryDto.setDescription("SomeDescription");
 
-        Category mockCategory = new Category();
-        when(categoryMapper.toModel(any(CategoryDto.class))).thenReturn(mockCategory);
         when(categoryRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, ()
