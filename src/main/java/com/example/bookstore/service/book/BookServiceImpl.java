@@ -38,6 +38,7 @@ public class BookServiceImpl implements BookService {
         return bookMapper.toDto(savedBook);
     }
 
+    @Transactional
     @Override
     public List<BookDto> findAll(Pageable pageable) {
         return bookRepository.findAll(pageable).stream()
@@ -45,6 +46,7 @@ public class BookServiceImpl implements BookService {
                 .toList();
     }
 
+    @Transactional
     @Override
     public BookDto findById(Long id) {
         Book book = bookRepository.findById(id).orElseThrow(()
@@ -66,12 +68,12 @@ public class BookServiceImpl implements BookService {
         return bookMapper.toDto(bookRepository.save(book));
     }
 
-    @Transactional
     @Override
     public void deleteById(Long id) {
         bookRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public List<BookDto> search(BookSearchParametersDto searchParameters) {
         Specification<Book> bookSpecification = specificationBuilder.build(searchParameters);
