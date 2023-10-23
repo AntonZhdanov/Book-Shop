@@ -91,7 +91,7 @@ This README file will describe how to work with the application and the steps to
         <br> 3. If you need to stop them(containers): docker-compose down.<br>
         <br> While application is running, you can access the Swagger UI for 
          API documentation and testing(Optional): 
-        <br> 1. Swagger UI URL: http://localhost:8080/swagger-ui.html.
+        <br> 1. Swagger UI URL: http://localhost:8080/api/swagger-ui/index.html
 </p>
 </div>
 <hr>

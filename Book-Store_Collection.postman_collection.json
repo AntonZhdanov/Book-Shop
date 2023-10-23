@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "7c87f865-599c-42bf-9d8b-4c852082ef75",
+		"_postman_id": "6df137b5-2ab8-41a4-bbd9-ea0dd34565ab",
 		"name": "New Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29434390",
-		"_collection_link": "https://bold-moon-711154.postman.co/workspace/bc5472fe-d99d-45cc-bbef-a72de1916980/collection/29434390-7c87f865-599c-42bf-9d8b-4c852082ef75?action=share&source=collection_link&creator=29434390"
+		"_exporter_id": "29434390"
 	},
 	"item": [
 		{
@@ -128,6 +127,170 @@
 			"response": []
 		},
 		{
+			"name": "GET Get the book by ID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmpvZUBleGFtcGxlLmNvbSIsImlhdCI6MTY5ODA2NTk0MywiZXhwIjoxNjk4MDY2MjQzfQ.PlkpUPI7HajmQeBKe89do9pWUB5WErP8WpQ_W7iJQaM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/books/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"books",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Update a specific book by id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmFkbUBleGFtcGxlLmNvbSIsImlhdCI6MTY5ODA3MDc2OCwiZXhwIjoxNjk4MDcxMDY4fQ.WPCPsOkLgBI4ZMBsk0FyY7lhJzX4NNBg85hWVve-vck",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Sample Book 7\",\n  \"author\": \"Updated Author\",\n  \"isbn\": \"9780306406157\",\n  \"price\": 59.99,\n  \"description\": \"Updated description\",\n  \"coverImage\": \"https://example.com/updated-cover-image.jpg\"\n}\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/books/7",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"books",
+						"7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Delete a specific book",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmFkbUBleGFtcGxlLmNvbSIsImlhdCI6MTY5ODA2Nzk5NiwiZXhwIjoxNjk4MDY4Mjk2fQ.fNETpm4z1GkvCH9BPp213LvSgny192Q3gsZMwyR_Yk4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/books/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"books",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Search books based on put criteria",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmpvZUBleGFtcGxlLmNvbSIsImlhdCI6MTY5ODA3OTM0MSwiZXhwIjoxNjk4MDc5NjQxfQ.u-SkX0y9OEEznPUzD2oU5tvQdSE1DnwmmCHPPiKN9h4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/books/search?title=Sample%20Book%203&author=Author%20C",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"books",
+						"search"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "Sample%20Book%203"
+						},
+						{
+							"key": "author",
+							"value": "Author%20C"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "POST Create a new book",
 			"request": {
 				"auth": {
@@ -135,7 +298,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImlhdCI6MTY5NDgyMzI4MSwiZXhwIjoxNjk0ODIzNTgxfQ.J5fpb3qGeDRW2ZTHmLocBD5xRe2YYLB36VHkFN2AgmM",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmFkbUBleGFtcGxlLmNvbSIsImlhdCI6MTY5NjA4MTgzNywiZXhwIjoxNjk2MDgyMTM3fQ.ewv38eN13Y_IHHxGxCM2-T21XFbqgbavoiUzKhLVqns",
 							"type": "string"
 						}
 					]
@@ -144,7 +307,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"title\": \"Sample Book 4\",\n  \"author\": \"Author C\",\n  \"isbn\": \"978-5-699-12025-7\",\n  \"price\": 39.99,\n  \"description\": \"Yet another sample book description.\",\n  \"coverImage\": \"http://example.com/cover3.jpg\"\n}\n",
+					"raw": "{\n  \"title\": \"Sample Book 10\",\n  \"author\": \"Author C\",\n  \"isbn\": \"9780544003415\",\n  \"price\": 39.99,\n  \"description\": \"Yet another sample book description.\",\n  \"coverImage\": \"http://example.com/cover3.jpg\",\n  \"categoryIds\": [1]\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -206,23 +369,26 @@
 			"response": []
 		},
 		{
-			"name": "PUT Update a specific category",
+			"name": "GET Retrieve all categories",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmFkbUBleGFtcGxlLmNvbSIsImlhdCI6MTY5NDg3NDA3MSwiZXhwIjoxNjk0ODc0MzcxfQ.szJUlv1iqyJgUo7FgpDiWttyR9RdT7kz1hi9nCasFXs",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmFkbUBleGFtcGxlLmNvbSIsImlhdCI6MTY5ODA3OTk3NCwiZXhwIjoxNjk4MDgwMjc0fQ.aHwvmWGdqdk9J-xpuPSuavPqvtF2J5T2Hm6Z4MUj9lo",
 							"type": "string"
 						}
 					]
 				},
-				"method": "PUT",
+				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"id\": 1,\n  \"name\": \"Fiction\",\n  \"description\": \"Fiction books1\"\n}\n",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -230,7 +396,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/categories/1",
+					"raw": "http://localhost:8080/api/categories",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -238,8 +404,7 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"categories",
-						"1"
+						"categories"
 					]
 				}
 			},
@@ -262,46 +427,6 @@
 					]
 				},
 				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \n}\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/api/categories/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"categories",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "DELETE a specific category",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmFkbUBleGFtcGxlLmNvbSIsImlhdCI6MTY5NDg3NDQ0MSwiZXhwIjoxNjk0ODc0NzQxfQ.JIODtkOV3iidXafgtdammmo5XmdUSm6a9j2QQtTrOeo",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -367,6 +492,86 @@
 						"categories",
 						"1",
 						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Update a specific category",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmFkbUBleGFtcGxlLmNvbSIsImlhdCI6MTY5NDg3NDA3MSwiZXhwIjoxNjk0ODc0MzcxfQ.szJUlv1iqyJgUo7FgpDiWttyR9RdT7kz1hi9nCasFXs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": 1,\n  \"name\": \"Fiction\",\n  \"description\": \"Fiction books1\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/categories/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"categories",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE a specific category",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmFkbUBleGFtcGxlLmNvbSIsImlhdCI6MTY5NDg3NDQ0MSwiZXhwIjoxNjk0ODc0NzQxfQ.JIODtkOV3iidXafgtdammmo5XmdUSm6a9j2QQtTrOeo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/categories/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"categories",
+						"1"
 					]
 				}
 			},
@@ -536,14 +741,14 @@
 			"response": []
 		},
 		{
-			"name": "POST Place an orde",
+			"name": "POST Place an order",
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmpqakBleGFtcGxlLmNvbSIsImlhdCI6MTY5NTI0ODgzOSwiZXhwIjoxNjk1MjQ5MTM5fQ.prk2a-wc97vboIkULDwIY7dTjt_r4f3vinMjhpk7Z0U",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmpvZUBleGFtcGxlLmNvbSIsImlhdCI6MTY5ODA4MjQ5NiwiZXhwIjoxNjk4MDgyNzk2fQ.21YNQNsG09y4lBenL0y0ukrKTFGgNSH5e8KRllo3a6w",
 							"type": "string"
 						}
 					]
