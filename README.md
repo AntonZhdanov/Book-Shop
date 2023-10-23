@@ -109,8 +109,8 @@ This README file will describe how to work with the application and the steps to
     <h3> Usage tools for testing </h3>
     <p>
         This project offers an intuitive interface and detailed API documentation via Swagger, 
-        which can be accessed at [http://localhost:8080/swagger-ui.html]. Additionally, a collection of Postman requests 
-        can be found [http://surl.li/lqnro], in order to make requests to API endpoints.
+        which can be accessed at [http://localhost:8080/api/swagger-ui/index.html]. Additionally, a collection of Postman requests 
+        can be found [http://surl.li/mlndt], in order to make requests to API endpoints.
     </p>
 </div>
 <hr>
