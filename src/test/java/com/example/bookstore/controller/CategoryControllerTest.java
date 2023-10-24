@@ -110,7 +110,7 @@ public class CategoryControllerTest {
         String jsonRequest = convertDtoToJson(requestDto);
 
         MvcResult result = mockMvc.perform(
-                        post("/api/categories")
+                        post("/categories")
                                 .content(jsonRequest)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -135,7 +135,7 @@ public class CategoryControllerTest {
         String jsonRequest = convertDtoToJson(requestDto);
 
         MvcResult result = mockMvc.perform(
-                        post("/api/categories")
+                        post("/categories")
                                 .content(jsonRequest)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -147,7 +147,7 @@ public class CategoryControllerTest {
     @Test
     @DisplayName("Get all categories")
     void getAll_Success() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/categories"))
+        MvcResult result = mockMvc.perform(get("/categories"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -169,7 +169,7 @@ public class CategoryControllerTest {
                 .setName("Fantasy")
                 .setDescription("Fantasy");
 
-        MvcResult result = mockMvc.perform(get("/api/categories/" + id))
+        MvcResult result = mockMvc.perform(get("/categories/" + id))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -186,7 +186,7 @@ public class CategoryControllerTest {
     void getCategoryById_NotValidId_NotFound() throws Exception {
         long nonExistingId = 100L;
 
-        mockMvc.perform(get("/api/categories/" + nonExistingId))
+        mockMvc.perform(get("/categories/" + nonExistingId))
                 .andExpect(status().isNotFound());
     }
 
@@ -204,7 +204,7 @@ public class CategoryControllerTest {
                 .setName(requestDto.getName())
                 .setDescription(requestDto.getDescription());
 
-        MvcResult result = mockMvc.perform(put("/api/categories/" + id)
+        MvcResult result = mockMvc.perform(put("/categories/" + id)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -229,7 +229,7 @@ public class CategoryControllerTest {
 
         String jsonRequest = convertDtoToJson(requestDto);
 
-        mockMvc.perform(put("/api/categories/" + nonExistingId)
+        mockMvc.perform(put("/categories/" + nonExistingId)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -245,7 +245,7 @@ public class CategoryControllerTest {
 
         String jsonRequest = convertDtoToJson(requestDto);
 
-        mockMvc.perform(put("/api/categories/" + id)
+        mockMvc.perform(put("/categories/" + id)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -261,7 +261,7 @@ public class CategoryControllerTest {
         long id = 4L;
 
         MvcResult resultBeforeDelete = mockMvc.perform(
-                        get("/api/categories")
+                        get("/categories")
                                 .with(user("user")))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -271,11 +271,11 @@ public class CategoryControllerTest {
                 new TypeReference<>() {
                 });
 
-        mockMvc.perform(delete("/api/categories/" + id))
+        mockMvc.perform(delete("/categories/" + id))
                 .andExpect(status().isOk());
 
         MvcResult resultAfterDelete = mockMvc.perform(
-                        get("/api/categories")
+                        get("/categories")
                                 .with(user("user")))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -295,11 +295,11 @@ public class CategoryControllerTest {
     void deleteCategory_NotValidId() throws Exception {
         long nonExistingId = 100L;
 
-        mockMvc.perform(delete("/api/categories/" + nonExistingId))
+        mockMvc.perform(delete("/categories/" + nonExistingId))
                 .andExpect(status().isOk());
 
         MvcResult result = mockMvc.perform(
-                        get("/api/categories")
+                        get("/categories")
                                 .with(user("user")))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -318,7 +318,7 @@ public class CategoryControllerTest {
     void getBooksByCategoryId_ValidId_ReturnsListOfBooks() throws Exception {
         long id = 1L;
 
-        MvcResult result = mockMvc.perform(get("/api/categories/" + id + "/books"))
+        MvcResult result = mockMvc.perform(get("/categories/" + id + "/books"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -345,7 +345,7 @@ public class CategoryControllerTest {
     void getBooksByCategoryId_NotValidId_ReturnsEmptyList() throws Exception {
         long nonExistingId = 100L;
 
-        MvcResult result = mockMvc.perform(get("/api/categories/" + nonExistingId + "/books"))
+        MvcResult result = mockMvc.perform(get("/categories/" + nonExistingId + "/books"))
                 .andExpect(status().isOk())
                 .andReturn();
 

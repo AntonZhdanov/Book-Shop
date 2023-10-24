@@ -126,7 +126,7 @@ class ShoppingCartControllerTest {
 
         String token = jwtUtil.generateToken("johndoe@mail.com");
 
-        MvcResult result = mockMvc.perform(get("/api/cart")
+        MvcResult result = mockMvc.perform(get("/cart")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -160,7 +160,7 @@ class ShoppingCartControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(itemRequestDto);
 
-        MvcResult resultBeforeAdd = mockMvc.perform(get("/api/cart")
+        MvcResult resultBeforeAdd = mockMvc.perform(get("/cart")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -169,13 +169,13 @@ class ShoppingCartControllerTest {
                 resultBeforeAdd.getResponse().getContentAsString(),
                 ShoppingCartDto.class);
 
-        mockMvc.perform(post("/api/cart")
+        mockMvc.perform(post("/cart")
                         .header("Authorization", "Bearer " + token)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        MvcResult resultAfterAdd = mockMvc.perform(get("/api/cart")
+        MvcResult resultAfterAdd = mockMvc.perform(get("/cart")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -210,7 +210,7 @@ class ShoppingCartControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(updateQuantityDto);
 
-        MvcResult resultBeforeUpdate = mockMvc.perform(get("/api/cart")
+        MvcResult resultBeforeUpdate = mockMvc.perform(get("/cart")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -226,13 +226,13 @@ class ShoppingCartControllerTest {
 
         int quantityBeforeUpdate = itemBeforeUpdate.getQuantity();
 
-        mockMvc.perform(put("/api/cart/cart-items/" + cartItemId)
+        mockMvc.perform(put("/cart/cart-items/" + cartItemId)
                         .header("Authorization", "Bearer " + token)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        MvcResult resultAfterUpdate = mockMvc.perform(get("/api/cart")
+        MvcResult resultAfterUpdate = mockMvc.perform(get("/cart")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -262,7 +262,7 @@ class ShoppingCartControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(updateQuantityDto);
 
-        mockMvc.perform(put("/api/cart/cart-items/" + nonExistingid)
+        mockMvc.perform(put("/cart/cart-items/" + nonExistingid)
                         .header("Authorization", "Bearer " + token)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -279,7 +279,7 @@ class ShoppingCartControllerTest {
         String token = jwtUtil.generateToken("johndoe@mail.com");
         Long id = 2L;
 
-        MvcResult resultBeforeDelete = mockMvc.perform(get("/api/cart")
+        MvcResult resultBeforeDelete = mockMvc.perform(get("/cart")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -292,11 +292,11 @@ class ShoppingCartControllerTest {
                 .filter(i -> i.getId().equals(id))
                 .toList();
 
-        mockMvc.perform(delete("/api/cart/cart-items/" + id)
+        mockMvc.perform(delete("/cart/cart-items/" + id)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
 
-        MvcResult resultAfterDelete = mockMvc.perform(get("/api/cart")
+        MvcResult resultAfterDelete = mockMvc.perform(get("/cart")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -321,7 +321,7 @@ class ShoppingCartControllerTest {
         String token = jwtUtil.generateToken("johndoe@mail.com");
         long nonexistent = 100L;
 
-        mockMvc.perform(delete("/api/cart/cart-items/" + nonexistent)
+        mockMvc.perform(delete("/cart/cart-items/" + nonexistent)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
     }
