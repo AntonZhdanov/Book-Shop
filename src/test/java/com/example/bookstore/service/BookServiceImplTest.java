@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,9 +53,30 @@ class BookServiceImplTest {
     @Mock
     private CategoryRepository categoryRepository;
 
-    @Test
-    @DisplayName("Save a book")
-    public void save_ValidCreateBookRequestDto_ReturnsValidBookDto() {
+    private Book book;
+    private BookDto bookDto;
+    private CreateBookRequestDto requestDto;
+    private List<Long> categoryIds;
+    private List<Category> categories;
+
+    @BeforeEach
+    public void setUp() {
+        book = createBook();
+        bookDto = createBookDto();
+        categoryIds = List.of(1L);
+        categories = createCategories();
+        requestDto = new CreateBookRequestDto(
+                book.getTitle(),
+                book.getAuthor(),
+                book.getIsbn(),
+                book.getPrice(),
+                book.getDescription(),
+                book.getCoverImage(),
+                categoryIds
+        );
+    }
+
+    private Book createBook() {
         Book book = new Book();
         book.setTitle("The Lord of the Rings");
         book.setAuthor("J. R. R. Tolkien");
@@ -62,9 +84,10 @@ class BookServiceImplTest {
         book.setPrice(BigDecimal.valueOf(15.5));
         book.setDescription("Awesome book");
         book.setCoverImage("The Lord of the Rings image");
+        return book;
+    }
 
-        List<Long> categoryIds = List.of(1L);
-
+    private BookDto createBookDto() {
         BookDto bookDto = new BookDto();
         bookDto.setId(1L);
         bookDto.setTitle("The Lord of the Rings");
@@ -74,21 +97,31 @@ class BookServiceImplTest {
         bookDto.setDescription("Awesome book");
         bookDto.setCoverImage("The Lord of the Rings image");
         bookDto.setCategoryIds(categoryIds);
+        return bookDto;
+    }
 
-        CreateBookRequestDto requestDto = new CreateBookRequestDto(
-                "The Lord of the Rings",
-                "J. R. R. Tolkien",
-                "9780544003415",
-                BigDecimal.valueOf(15.5),
-                "Awesome book",
-                "The Lord of the Rings image",
-                 categoryIds
-        );
+    private List<Category> createCategories() {
         Category category = new Category();
         category.setId(1L);
         category.setName("Fantasy");
-        List<Category> categories = List.of(category);
+        return List.of(category);
+    }
 
+    private BookDtoWithoutCategoryIds createBookDtoWithoutCategoryIds(Book book) {
+        BookDtoWithoutCategoryIds dto = new BookDtoWithoutCategoryIds();
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setAuthor(book.getAuthor());
+        dto.setIsbn(book.getIsbn());
+        dto.setPrice(book.getPrice());
+        dto.setDescription(book.getDescription());
+        dto.setCoverImage(book.getCoverImage());
+        return dto;
+    }
+
+    @Test
+    @DisplayName("Save a book")
+    public void save_ValidCreateBookRequestDto_ReturnsValidBookDto() {
         when(bookMapper.toModel(requestDto)).thenReturn(book);
         when(categoryRepository.findAllById(categoryIds)).thenReturn(categories);
         when(bookRepository.save(book)).thenReturn(book);
@@ -106,37 +139,15 @@ class BookServiceImplTest {
     @DisplayName("Find all books")
     public void findAll_ValidPageable_ReturnsAllBooks() {
         Long bookId = 1L;
-        Book book = new Book();
+
+        Book book = createBook();
         book.setId(bookId);
-        book.setTitle("The Lord of the Rings");
-        book.setAuthor("J. R. R. Tolkien");
-        book.setIsbn("9780544003415");
-        book.setPrice(BigDecimal.valueOf(15.5));
-        book.setDescription("Awesome book");
-        book.setCoverImage("The Lord of the Rings image");
-
-        Category fantasyCategory = new Category();
-        fantasyCategory.setId(1L);
-        fantasyCategory.setName("Fantasy");
-        fantasyCategory.setDescription("Fantasy");
-
+        Category fantasyCategory = categories.get(0);
         book.setCategories(new HashSet<>(List.of(fantasyCategory)));
 
-        BookDto bookDto = new BookDto();
+        BookDto bookDto = createBookDto();
         bookDto.setId(book.getId());
-        bookDto.setTitle(book.getTitle());
-        bookDto.setAuthor(book.getAuthor());
-        bookDto.setIsbn(book.getIsbn());
-        bookDto.setPrice(book.getPrice());
-        bookDto.setDescription(book.getDescription());
-        bookDto.setCoverImage(book.getCoverImage());
-
-        CategoryDto fairytaleCategoryDto = new CategoryDto();
-        fairytaleCategoryDto.setId(fantasyCategory.getId());
-        fairytaleCategoryDto.setName(fantasyCategory.getName());
-        fairytaleCategoryDto.setDescription(fantasyCategory.getDescription());
-
-        bookDto.setCategoryIds(List.of(fairytaleCategoryDto.getId()));
+        bookDto.setCategoryIds(List.of(fantasyCategory.getId()));
 
         Pageable pageable = PageRequest.of(0, 10);
         List<Book> books = List.of(book);
@@ -157,35 +168,14 @@ class BookServiceImplTest {
     @DisplayName("Get a book by id")
     public void getBookById_ValidBookId_ReturnsValidBookDto() {
         Long bookId = 1L;
-        Book book = new Book();
+        Book book = createBook();
         book.setId(bookId);
-        book.setTitle("The Lord of the Rings");
-        book.setAuthor("J. R. R. Tolkien");
-        book.setIsbn("9780544003415");
-        book.setPrice(BigDecimal.valueOf(15.5));
-        book.setDescription("Awesome book");
-        book.setCoverImage("The Lord of the Rings image");
 
-        Category fantasyCategory = new Category();
-        fantasyCategory.setId(1L);
-        fantasyCategory.setName("Fantasy");
-        fantasyCategory.setDescription("Fantasy");
-
+        Category fantasyCategory = categories.get(0);
         book.setCategories(new HashSet<>(List.of(fantasyCategory)));
 
-        CategoryDto fantasyCategoryDto = new CategoryDto();
-        fantasyCategoryDto.setId(fantasyCategory.getId());
-        fantasyCategoryDto.setName(fantasyCategory.getName());
-        fantasyCategoryDto.setDescription(fantasyCategory.getDescription());
-
-        BookDto bookDto = new BookDto();
-        bookDto.setTitle(book.getTitle());
-        bookDto.setAuthor(book.getAuthor());
-        bookDto.setIsbn(book.getIsbn());
-        bookDto.setPrice(book.getPrice());
-        bookDto.setDescription(book.getDescription());
-        bookDto.setCoverImage(book.getCoverImage());
-        bookDto.setCategoryIds(List.of(fantasyCategoryDto.getId()));
+        BookDto bookDto = createBookDto();
+        bookDto.setCategoryIds(List.of(fantasyCategory.getId()));
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
         when(bookMapper.toDto(book)).thenReturn(bookDto);
@@ -337,36 +327,6 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Search books with not valid parameters")
     public void search_NotValidParameters_ReturnsEmptyList() {
-        Long bookId = 1L;
-        Book book = new Book();
-        book.setId(bookId);
-        book.setTitle("The Lord of the Rings");
-        book.setAuthor("J. R. R. Tolkien");
-        book.setIsbn("9780544003415");
-        book.setPrice(BigDecimal.valueOf(15.5));
-        book.setDescription("Awesome book");
-        book.setCoverImage("The Lord of the Rings image");
-
-        Category fantasyCategory = new Category();
-        fantasyCategory.setId(1L);
-        fantasyCategory.setName("Fantasy");
-        fantasyCategory.setDescription("Fantasy");
-
-        CategoryDto fantasyCategoryDto = new CategoryDto();
-        fantasyCategoryDto.setId(fantasyCategory.getId());
-        fantasyCategoryDto.setName(fantasyCategory.getName());
-        fantasyCategoryDto.setDescription(fantasyCategory.getDescription());
-
-        BookDto bookDto = new BookDto();
-        bookDto.setId(book.getId());
-        bookDto.setTitle(book.getTitle());
-        bookDto.setAuthor(book.getAuthor());
-        bookDto.setIsbn(book.getIsbn());
-        bookDto.setPrice(book.getPrice());
-        bookDto.setDescription(book.getDescription());
-        bookDto.setCoverImage(book.getCoverImage());
-        bookDto.setCategoryIds(List.of(fantasyCategoryDto.getId()));
-
         BookSearchParametersDto parameters = new BookSearchParametersDto(
                 new String[]{"nonexistent author"},
                 new String[]{"nonexistent title"},
@@ -390,47 +350,23 @@ class BookServiceImplTest {
     @Test
     @DisplayName("Get books by category id")
     public void getBookByCategoryId_ValidCategoryId_ReturnsListOfBooks() {
+        book.setCategories(new HashSet<>(categories));
+
+        BookDtoWithoutCategoryIds bookDtoWithoutCategoryIds = createBookDtoWithoutCategoryIds(book);
         Long bookId = 1L;
-        Book book = new Book();
-        book.setId(bookId);
-        book.setTitle("The Lord of the Rings");
-        book.setAuthor("J. R. R. Tolkien");
-        book.setIsbn("9780544003415");
-        book.setPrice(BigDecimal.valueOf(15.5));
-        book.setDescription("Awesome book");
-        book.setCoverImage("The Lord of the Rings image");
-
-        Category fantasyCategory = new Category();
-        fantasyCategory.setId(1L);
-        fantasyCategory.setName("Fantasy");
-        fantasyCategory.setDescription("Fantasy");
-
-        book.setCategories(new HashSet<>(List.of(fantasyCategory)));
-
-        CategoryDto fantasyCategoryDto = new CategoryDto();
-        fantasyCategoryDto.setId(fantasyCategory.getId());
-        fantasyCategoryDto.setName(fantasyCategory.getName());
-        fantasyCategoryDto.setDescription(fantasyCategory.getDescription());
-
-        BookDtoWithoutCategoryIds bookDto = new BookDtoWithoutCategoryIds();
-        bookDto.setId(book.getId());
-        bookDto.setTitle(book.getTitle());
-        bookDto.setAuthor(book.getAuthor());
-        bookDto.setIsbn(book.getIsbn());
-        bookDto.setPrice(book.getPrice());
-        bookDto.setDescription(book.getDescription());
-        bookDto.setCoverImage(book.getCoverImage());
 
         when(bookRepository.findAllByCategoryId(anyLong())).thenReturn(List.of(book));
-        when(bookMapper.toDtoWithoutCategoryIds(book)).thenReturn(bookDto);
+        when(bookMapper.toDtoWithoutCategoryIds(book)).thenReturn(bookDtoWithoutCategoryIds);
 
-        List<BookDtoWithoutCategoryIds> booksByCategoryId = bookService.getBooksByCategoryId(1L);
+        List<BookDtoWithoutCategoryIds> booksByCategoryId = bookService
+                .getBooksByCategoryId(bookId);
 
         assertThat(booksByCategoryId).hasSize(1);
-        assertEquals(bookDto, booksByCategoryId.get(0));
+        assertEquals(bookDtoWithoutCategoryIds, booksByCategoryId.get(0));
 
         verify(bookRepository, times(1)).findAllByCategoryId(anyLong());
         verifyNoMoreInteractions(bookRepository, bookMapper);
+
     }
 
     @Test
