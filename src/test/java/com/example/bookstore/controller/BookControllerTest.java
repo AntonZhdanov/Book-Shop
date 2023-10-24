@@ -126,7 +126,7 @@ class BookControllerTest {
     @Test
     @DisplayName("Get all books")
     void getAll_ValidPageable_Success() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/books"))
+        MvcResult result = mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -146,7 +146,7 @@ class BookControllerTest {
 
         BookDto expected = BookControllerTest.expectedBookDto;
 
-        MvcResult result = mockMvc.perform(get("/api/books/" + id))
+        MvcResult result = mockMvc.perform(get("/books/" + id))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -164,7 +164,7 @@ class BookControllerTest {
     void getBookById_NotValidId_NotFound() throws Exception {
         long nonExistingId = 100L;
 
-        mockMvc.perform(get("/api/books/" + nonExistingId))
+        mockMvc.perform(get("/books/" + nonExistingId))
                 .andExpect(status().isNotFound());
     }
 
@@ -193,7 +193,7 @@ class BookControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         MvcResult result = mockMvc.perform(
-                        post("/api/books")
+                        post("/books")
                                 .content(jsonRequest)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -225,7 +225,7 @@ class BookControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         mockMvc.perform(
-                        post("/api/books")
+                        post("/books")
                                 .content(jsonRequest)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -238,7 +238,7 @@ class BookControllerTest {
     void delete_ValidId_Success() throws Exception {
         long id = 11L;
 
-        MvcResult resultBeforeDelete = mockMvc.perform(get("/api/books")
+        MvcResult resultBeforeDelete = mockMvc.perform(get("/books")
                         .with(user("user")))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -248,11 +248,11 @@ class BookControllerTest {
                 new TypeReference<>() {
                 });
 
-        mockMvc.perform(delete("/api/books/" + id)
+        mockMvc.perform(delete("/books/" + id)
                         .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
 
-        MvcResult resultAfterDelete = mockMvc.perform(get("/api/books")
+        MvcResult resultAfterDelete = mockMvc.perform(get("/books")
                         .with(user("user")))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -271,7 +271,7 @@ class BookControllerTest {
     void delete_NotValidId() throws Exception {
         long nonExistingId = 100L;
 
-        MvcResult resultBeforeDelete = mockMvc.perform(get("/api/books")
+        MvcResult resultBeforeDelete = mockMvc.perform(get("/books")
                         .with(user("user")))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -281,11 +281,11 @@ class BookControllerTest {
                 new TypeReference<>() {
                 });
 
-        mockMvc.perform(delete("/api/books/" + nonExistingId)
+        mockMvc.perform(delete("/books/" + nonExistingId)
                         .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
 
-        MvcResult resultAfterDelete = mockMvc.perform(get("/api/books")
+        MvcResult resultAfterDelete = mockMvc.perform(get("/books")
                         .with(user("user")))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -331,7 +331,7 @@ class BookControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
-        MvcResult result = mockMvc.perform(put("/api/books/" + id)
+        MvcResult result = mockMvc.perform(put("/books/" + id)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -363,7 +363,7 @@ class BookControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
-        MvcResult result = mockMvc.perform(put("/api/books/" + nonExistingId)
+        MvcResult result = mockMvc.perform(put("/books/" + nonExistingId)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -387,7 +387,7 @@ class BookControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(put("/api/books/" + id)
+        mockMvc.perform(put("/books/" + id)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -396,19 +396,19 @@ class BookControllerTest {
     @Test
     @DisplayName("Search books based on put criteria")
     void searchBooks_ValidParameters_ReturnsListOfBooks() throws Exception {
-        MvcResult resultTitleQuery = mockMvc.perform(get("/api/books/search")
+        MvcResult resultTitleQuery = mockMvc.perform(get("/books/search")
                         .param("title", "The Lord of The Rings")
                         .with(user("user")))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        MvcResult resultPriceQuery = mockMvc.perform(get("/api/books/search")
+        MvcResult resultPriceQuery = mockMvc.perform(get("/books/search")
                         .param("price", "24")
                         .with(user("user")))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        MvcResult resultDescriptionQuery = mockMvc.perform(get("/api/books/search")
+        MvcResult resultDescriptionQuery = mockMvc.perform(get("/books/search")
                         .param("description", "Description")
                         .with(user("user")))
                 .andExpect(status().isOk())
@@ -442,7 +442,7 @@ class BookControllerTest {
     @Test
     @DisplayName("Search books with no parameters")
     void searchBooks_NoParameters_ReturnsListOfAllBooks() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/books/search"))
+        MvcResult result = mockMvc.perform(get("/books/search"))
                 .andExpect(status().isOk())
                 .andReturn();
 
