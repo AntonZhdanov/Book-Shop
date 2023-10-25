@@ -7,14 +7,17 @@ import com.example.bookstore.dto.book.CreateBookRequestDto;
 import com.example.bookstore.exception.EntityNotFoundException;
 import com.example.bookstore.mapper.BookMapper;
 import com.example.bookstore.model.Book;
+import com.example.bookstore.model.Category;
 import com.example.bookstore.repository.SpecificationBuilder;
 import com.example.bookstore.repository.book.BookRepository;
+import com.example.bookstore.repository.category.CategoryRepository;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -22,13 +25,20 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final SpecificationBuilder<Book> specificationBuilder;
+    private final CategoryRepository categoryRepository;
 
+    @Transactional
     @Override
     public BookDto save(CreateBookRequestDto bookRequestDto) {
         Book book = bookMapper.toModel(bookRequestDto);
-        return bookMapper.toDto(bookRepository.save(book));
+        List<Category> categories = categoryRepository
+                .findAllById(bookRequestDto.categoryIds());
+        book.setCategories(new HashSet<>(categories));
+        Book savedBook = bookRepository.save(book);
+        return bookMapper.toDto(savedBook);
     }
 
+    @Transactional
     @Override
     public List<BookDto> findAll(Pageable pageable) {
         return bookRepository.findAll(pageable).stream()
@@ -36,6 +46,7 @@ public class BookServiceImpl implements BookService {
                 .toList();
     }
 
+    @Transactional
     @Override
     public BookDto findById(Long id) {
         Book book = bookRepository.findById(id).orElseThrow(()
@@ -43,6 +54,7 @@ public class BookServiceImpl implements BookService {
         return bookMapper.toDto(book);
     }
 
+    @Transactional
     @Override
     public BookDto update(Book book) {
         Book bookFromDb = bookRepository.findById(book.getId()).orElseThrow(()
@@ -61,6 +73,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public List<BookDto> search(BookSearchParametersDto searchParameters) {
         Specification<Book> bookSpecification = specificationBuilder.build(searchParameters);
@@ -74,6 +87,6 @@ public class BookServiceImpl implements BookService {
         List<Book> books = bookRepository.findAllByCategoryId(categoryId);
         return books.stream()
                 .map(bookMapper::toDtoWithoutCategoryIds)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
