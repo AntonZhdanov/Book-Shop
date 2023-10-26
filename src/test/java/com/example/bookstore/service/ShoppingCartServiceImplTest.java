@@ -17,6 +17,7 @@ import com.example.bookstore.mapper.ShoppingCartMapper;
 import com.example.bookstore.model.CartItem;
 import com.example.bookstore.model.ShoppingCart;
 import com.example.bookstore.model.User;
+import com.example.bookstore.repository.cartitem.CartItemRepository;
 import com.example.bookstore.repository.shoppingcart.ShoppingCartRepository;
 import com.example.bookstore.service.cartitem.CartItemService;
 import com.example.bookstore.service.shoppingcart.ShoppingCartServiceImpl;
@@ -30,7 +31,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.access.AccessDeniedException;
 
 @ExtendWith(MockitoExtension.class)
 class ShoppingCartServiceImplTest {
@@ -42,6 +42,8 @@ class ShoppingCartServiceImplTest {
     private ShoppingCartRepository shoppingCartRepository;
     @Mock
     private CartItemService cartItemService;
+    @Mock
+    private CartItemRepository cartItemRepository;
     @Mock
     private UserService userService;
 
@@ -103,14 +105,13 @@ class ShoppingCartServiceImplTest {
     public void deleteCartItem_Valid_DeletesAndReturnsUpdatedCart() {
         mockCart.setUser(mockUser);
         mockCartItem.setShoppingCart(mockCart);
-        Long cartItemId = 1L;
         mockUser.setId(3L);
 
         when(userService.getUser()).thenReturn(mockUser);
-        when(cartItemService.findById(cartItemId)).thenReturn(mockCartItem);
         when(shoppingCartRepository.findByUserId(mockUser.getId()))
                 .thenReturn(Optional.of(mockCart));
         when(shoppingCartMapper.toDto(mockCart)).thenReturn(mockCartDto);
+        Long cartItemId = 1L;
 
         ShoppingCartDto result = shoppingCartService.deleteCartItem(cartItemId);
 
@@ -119,8 +120,8 @@ class ShoppingCartServiceImplTest {
     }
 
     @Test
-    @DisplayName("Attempt to delete cart item not owned by user throws AccessDeniedException")
-    public void deleteCartItem_ItemNotOwnedByUser_ThrowsAccessDeniedException() {
+    @DisplayName("Attempt to delete cart item not owned by user throws EntityNotFoundException")
+    public void deleteCartItem_ItemNotOwnedByUser_ThrowsEntityNotFoundException() {
         User anotherUser = new User();
         mockCart.setUser(anotherUser);
         mockCartItem.setShoppingCart(mockCart);
@@ -128,9 +129,8 @@ class ShoppingCartServiceImplTest {
         anotherUser.setId(2L);
 
         when(userService.getUser()).thenReturn(mockUser);
-        when(cartItemService.findById(cartItemId)).thenReturn(mockCartItem);
 
-        assertThrows(AccessDeniedException.class, ()
+        assertThrows(EntityNotFoundException.class, ()
                 -> shoppingCartService.deleteCartItem(cartItemId));
     }
 
@@ -139,7 +139,8 @@ class ShoppingCartServiceImplTest {
     public void updateQuantity_Valid_UpdatesQuantityAndReturnsCart() {
         Long cartItemId = 1L;
         when(userService.getUser()).thenReturn(mockUser);
-        when(cartItemService.findById(cartItemId)).thenReturn(mockCartItem);
+        when(cartItemService.getById(cartItemId)).thenReturn(mockCartItem);
+        when(cartItemRepository.save(any(CartItem.class))).thenReturn(mockCartItem);
         when(shoppingCartMapper.toDto(any(ShoppingCart.class))).thenReturn(mockCartDto);
         when(shoppingCartRepository.findByUserId(mockUser.getId()))
                 .thenReturn(Optional.of(mockCart));
@@ -166,12 +167,12 @@ class ShoppingCartServiceImplTest {
         when(shoppingCartRepository.findByUserId(mockUser.getId()))
                 .thenReturn(Optional.of(mockCart));
         when(userService.getUser()).thenReturn(mockUser);
-        when(cartItemService.findById(cartItemId)).thenReturn(mockCartItem, new CartItem());
+        when(cartItemService.getById(cartItemId)).thenReturn(mockCartItem, new CartItem());
 
         shoppingCartService.updateQuantity(cartItemId, updateDto);
         shoppingCartService.updateQuantity(cartItemId, updateDto);
 
-        verify(cartItemService, times(2)).findById(cartItemId);
+        verify(cartItemService, times(2)).getById(cartItemId);
         assertEquals(mockCartItem.getQuantity(), 5);
     }
 
@@ -200,10 +201,10 @@ class ShoppingCartServiceImplTest {
 
     @Test
     @DisplayName("Confirm purchase by deleting old cart and creating a new one")
-    public void confirmPurchase_Valid_DeletesAndCreatesNewCart() {
+    public void clearAndCreateNewShoppingCart_Valid_DeletesAndCreatesNewCart() {
         mockCart.setUser(mockUser);
 
-        shoppingCartService.confirmPurchase(mockCart);
+        shoppingCartService.clearAndCreateNewShoppingCart(mockCart);
 
         verify(shoppingCartRepository, times(1)).delete(mockCart);
         ArgumentCaptor<ShoppingCart> cartCaptor = ArgumentCaptor.forClass(ShoppingCart.class);

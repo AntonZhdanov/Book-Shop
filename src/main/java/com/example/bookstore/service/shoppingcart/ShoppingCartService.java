@@ -17,5 +17,5 @@ public interface ShoppingCartService {
 
     ShoppingCart getShoppingCartModel();
 
-    void confirmPurchase(ShoppingCart shoppingCart);
+    void clearAndCreateNewShoppingCart(ShoppingCart shoppingCart);
 }

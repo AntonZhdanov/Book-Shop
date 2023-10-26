@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
         orderItems.forEach(orderItem -> orderItem.setOrder(order));
         order.setOrderItems(orderItems);
         Order savedOrder = orderRepository.save(order);
-        shoppingCartService.confirmPurchase(shoppingCart);
+        shoppingCartService.clearAndCreateNewShoppingCart(shoppingCart);
         return orderMapper.toDto(savedOrder);
     }
 
@@ -109,6 +109,6 @@ public class OrderServiceImpl implements OrderService {
     private Book getBookFromCartItem(CartItem cartItem) {
         return bookRepository.findById(cartItem.getBook().getId()).orElseThrow(()
                 -> new EntityNotFoundException("Can't find book by id: "
-                           + cartItem.getBook().getId()));
+                + cartItem.getBook().getId()));
     }
 }

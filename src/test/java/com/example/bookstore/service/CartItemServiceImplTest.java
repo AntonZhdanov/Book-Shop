@@ -13,6 +13,7 @@ import com.example.bookstore.mapper.CartItemMapper;
 import com.example.bookstore.model.Book;
 import com.example.bookstore.model.CartItem;
 import com.example.bookstore.model.ShoppingCart;
+import com.example.bookstore.model.User;
 import com.example.bookstore.repository.book.BookRepository;
 import com.example.bookstore.repository.cartitem.CartItemRepository;
 import com.example.bookstore.service.cartitem.CartItemServiceImpl;
@@ -23,7 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 @ExtendWith(MockitoExtension.class)
 class CartItemServiceImplTest {
@@ -42,6 +45,7 @@ class CartItemServiceImplTest {
     private CartItem cartItemMock;
     private Long bookId;
     private Long cartItemId;
+    private Long userId;
 
     @BeforeEach
     public void setUp() {
@@ -53,6 +57,7 @@ class CartItemServiceImplTest {
         itemRequestDto.setQuantity(1);
         bookId = 1L;
         cartItemId = 1L;
+        userId = 1L;
     }
 
     @Test
@@ -70,10 +75,10 @@ class CartItemServiceImplTest {
 
     @Test
     @DisplayName("Save with null BookId throws IllegalArgumentException")
-    void save_NullBookId_ThrowsIllegalArgumentException() {
+    void save_NullBookId_ThrowsEntityNotFoundException() {
         itemRequestDto.setBookId(null);
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(EntityNotFoundException.class, () ->
                 cartItemServiceImpl.save(itemRequestDto, shoppingCart));
     }
 
@@ -105,7 +110,7 @@ class CartItemServiceImplTest {
     void findById_ValidId_ReturnsCartItem() {
         when(cartItemRepository.findById(cartItemId)).thenReturn(Optional.of(cartItemMock));
 
-        CartItem result = cartItemServiceImpl.findById(cartItemId);
+        CartItem result = cartItemServiceImpl.getById(cartItemId);
 
         assertEquals(cartItemMock, result);
     }
@@ -116,17 +121,7 @@ class CartItemServiceImplTest {
         when(cartItemRepository.findById(cartItemId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () ->
-                cartItemServiceImpl.findById(cartItemId));
-    }
-
-    @Test
-    @DisplayName("Delete by valid ID results in successful deletion")
-    void deleteById_ValidId_SuccessfulDeletion() {
-        when(cartItemRepository.existsById(cartItemId)).thenReturn(true);
-
-        cartItemServiceImpl.deleteById(cartItemId);
-
-        verify(cartItemRepository).deleteById(cartItemId);
+                cartItemServiceImpl.getById(cartItemId));
     }
 
     @Test
@@ -135,7 +130,7 @@ class CartItemServiceImplTest {
         when(cartItemRepository.existsById(cartItemId)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () ->
-                cartItemServiceImpl.deleteById(cartItemId));
+                cartItemServiceImpl.deleteById(cartItemId, userId));
     }
 
     @Test
@@ -144,7 +139,27 @@ class CartItemServiceImplTest {
         when(cartItemRepository.existsById(cartItemId)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () ->
-                cartItemServiceImpl.deleteById(cartItemId));
+                cartItemServiceImpl.deleteById(cartItemId, userId));
         verify(cartItemRepository, never()).deleteById(cartItemId);
+    }
+
+    @Test
+    @DisplayName("Attempt to delete cart item without permission throws AccessDeniedException")
+    public void deleteCartItem_ItemWithoutPermission_ThrowsAccessDeniedException() {
+        User user = Mockito.mock(User.class);
+        ShoppingCart userCart = Mockito.mock(ShoppingCart.class);
+        CartItem cartItemMock = Mockito.mock(CartItem.class);
+
+        Long cartItemId = 1L;
+
+        when(cartItemRepository.existsById(cartItemId)).thenReturn(true);
+        when(cartItemRepository.findById(cartItemId)).thenReturn(Optional.of(cartItemMock));
+        when(cartItemMock.getShoppingCart()).thenReturn(userCart);
+        when(userCart.getUser()).thenReturn(user);
+        Long userId = 1L;
+
+        assertThrows(AccessDeniedException.class, () ->
+                cartItemServiceImpl.deleteById(cartItemId, userId));
+
     }
 }

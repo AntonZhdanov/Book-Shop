@@ -9,6 +9,7 @@ import com.example.bookstore.model.ShoppingCart;
 import com.example.bookstore.repository.book.BookRepository;
 import com.example.bookstore.repository.cartitem.CartItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,9 +22,6 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public CartItem save(CreateCartItemRequestDto createCartItemRequestDto,
                          ShoppingCart shoppingCart) {
-        if (createCartItemRequestDto.getBookId() == null) {
-            throw new IllegalArgumentException("Book id cannot be null");
-        }
         Book book = bookRepository.findById(createCartItemRequestDto.getBookId())
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with ID: "
                         + createCartItemRequestDto.getBookId()));
@@ -34,15 +32,20 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItem findById(Long id) {
+    public CartItem getById(Long id) {
         return cartItemRepository.findById(id).orElseThrow(()
                 -> new EntityNotFoundException("Can't find cartItem by id: " + id));
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Long id, Long userId) {
         if (!cartItemRepository.existsById(id)) {
             throw new EntityNotFoundException("Can't delete cartItem by id: " + id);
+        }
+        CartItem cartItem = getById(id);
+        if (!cartItem.getShoppingCart().getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("User does not have permission to "
+                    + "delete this cart item");
         }
         cartItemRepository.deleteById(id);
     }
