@@ -218,8 +218,8 @@ class BookControllerTest {
                 "Sir Arthur Conan Doyle",
                 "",
                 null,
-                 "",
-                  "",
+                "",
+                "",
                 null);
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
